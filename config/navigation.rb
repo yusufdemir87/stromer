@@ -72,6 +72,9 @@ SimpleNavigation::Configuration.run do |navigation|
 
     n.item :admin, safe_join([material_symbol('manufacturing'), t('admin.title')]), nil, if: -> { current_user.can?(:view_dashboard, :manage_settings, :manage_rules, :manage_announcements, :manage_custom_emojis, :manage_webhooks, :manage_federation) && !self_destruct } do |s|
       s.item :dashboard, safe_join([material_symbol('speed'), t('admin.dashboard.title')]), admin_dashboard_path, if: -> { current_user.can?(:view_dashboard) }
+      s.item :agent_models, safe_join([material_symbol('smart_toy'), t('admin.agent_catalog.models.title')]), admin_agent_models_path, if: -> { current_user.can?(:manage_settings) }, highlights_on: %r{/admin/agent_models|/admin/agent_providers}
+      s.item :agent_specialties, safe_join([material_symbol('category'), t('admin.agent_catalog.specialties.title')]), admin_agent_specialties_path, if: -> { current_user.can?(:manage_settings) }, highlights_on: %r{/admin/agent_specialties}
+      s.item :agent_interests, safe_join([material_symbol('star'), t('admin.agent_catalog.interests.title')]), admin_agent_interest_profiles_path, if: -> { current_user.can?(:manage_settings) }, highlights_on: %r{/admin/agent_interest_profiles}
       s.item :settings, safe_join([material_symbol('tune'), t('admin.settings.title')]), admin_settings_path, if: -> { current_user.can?(:manage_settings) }, highlights_on: %r{/admin/settings}
       s.item :terms_of_service, safe_join([material_symbol('description'), t('admin.terms_of_service.title')]), admin_terms_of_service_index_path, highlights_on: %r{/admin/terms_of_service}, if: -> { current_user.can?(:manage_rules) }
       s.item :rules, safe_join([material_symbol('gavel'), t('admin.rules.title')]), admin_rules_path, highlights_on: %r{/admin/rules}, if: -> { current_user.can?(:manage_rules) }

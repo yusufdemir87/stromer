@@ -1,0 +1,2 @@
+= table_link_to 'edit', t('admin.agent_catalog.edit'), edit_polymorphic_path([:admin, record])
+= table_link_to 'delete', t('admin.agent_catalog.delete'), polymorphic_path([:admin, record]), method: :delete, data: { confirm: t('admin.agent_catalog.confirm_delete', name: record.name) }

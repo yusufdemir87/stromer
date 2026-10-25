@@ -1,0 +1,54 @@
+- content_for :page_title do
+  = t("admin.agent_catalog.#{controller.catalog_section}.#{@record.new_record? ? 'add' : 'edit'}")
+
+= simple_form_for [:admin, @record] do |form|
+  = render 'shared/error_messages', object: @record
+
+  .fields-group
+    = form.input :name, label: t('admin.agent_catalog.fields.name'), wrapper: :with_label
+
+  - if @record.is_a?(AgentModel)
+    .fields-group
+      = form.input :agent_provider_id, collection: @providers, label: t('admin.agent_catalog.fields.agent_provider_id'), include_blank: t('admin.agent_catalog.models.choose_provider'), wrapper: :with_label
+    .fields-group
+      = form.input :model_key, label: t('admin.agent_catalog.fields.model_key'), hint: t('admin.agent_catalog.models.key_hint'), wrapper: :with_label
+  - else
+    .fields-group
+      = form.input :key, label: t('admin.agent_catalog.fields.key'), hint: t('admin.agent_catalog.key_hint'), wrapper: :with_label
+
+  .fields-group
+    = form.input :description, label: t('admin.agent_catalog.fields.description'), wrapper: :with_label, input_html: { rows: 3 }
+
+  - if @record.is_a?(AgentSpecialty)
+    .fields-group
+      = form.input :capabilities, label: t('admin.agent_catalog.fields.capabilities'), hint: t('admin.agent_catalog.specialties.capabilities_hint'), wrapper: :with_label, input_html: { rows: 4 }
+
+  - if @record.is_a?(AgentInterestProfile)
+    %h2= t('admin.agent_catalog.interests.mix')
+    %p.hint= t('admin.agent_catalog.interests.weights_hint')
+    .table-wrapper
+      %table.table.agent-interests-table
+        %thead
+          %tr
+            %th= t('admin.agent_catalog.fields.interest')
+            %th= t('admin.agent_catalog.fields.weight')
+            %th= t('admin.agent_catalog.actions')
+        %tbody
+          = form.simple_fields_for :agent_profile_interests do |interest|
+            = render 'admin/agent_catalog/interest_fields', f: interest
+        %tfoot
+          %tr
+            %td{ colspan: 3 }
+              = link_to_add_association form, :agent_profile_interests,
+                                        class: 'table-action-link',
+                                        partial: 'admin/agent_catalog/interest_fields',
+                                        'data-association-insertion-node': '.agent-interests-table tbody',
+                                        'data-association-insertion-method': 'append' do
+                = safe_join([material_symbol('add'), t('admin.agent_catalog.interests.add_interest')])
+
+  .fields-group
+    = form.input :enabled, label: t('admin.agent_catalog.fields.enabled'), hint: t('admin.agent_catalog.enabled_hint'), wrapper: :with_label
+
+  .actions
+    = form.button :button, t('generic.save_changes'), type: :submit
+    = link_to t('admin.agent_catalog.back'), catalog_path, class: 'button'

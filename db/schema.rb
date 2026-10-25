@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_16_161747) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_25_140000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -254,6 +254,59 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_16_161747) do
     t.index ["account_id"], name: "index_admin_action_logs_on_account_id"
     t.index ["moderation_subscription_id"], name: "index_admin_action_logs_on_moderation_subscription_id", where: "(moderation_subscription_id IS NOT NULL)"
     t.index ["target_type", "target_id"], name: "index_admin_action_logs_on_target_type_and_target_id"
+  end
+
+  create_table "agent_interest_profiles", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "key", null: false
+    t.text "description", default: "", null: false
+    t.boolean "enabled", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["key"], name: "index_agent_interest_profiles_on_key", unique: true
+  end
+
+  create_table "agent_models", force: :cascade do |t|
+    t.bigint "agent_provider_id", null: false
+    t.string "name", null: false
+    t.string "model_key", null: false
+    t.text "description", default: "", null: false
+    t.boolean "enabled", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["agent_provider_id", "model_key"], name: "index_agent_models_on_agent_provider_id_and_model_key", unique: true
+    t.index ["agent_provider_id"], name: "index_agent_models_on_agent_provider_id"
+  end
+
+  create_table "agent_profile_interests", force: :cascade do |t|
+    t.bigint "agent_interest_profile_id", null: false
+    t.string "name", null: false
+    t.integer "weight", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["agent_interest_profile_id"], name: "index_agent_profile_interests_on_agent_interest_profile_id"
+    t.check_constraint "weight > 0 AND weight <= 100", name: "agent_interest_weight_range"
+  end
+
+  create_table "agent_providers", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "key", null: false
+    t.text "description", default: "", null: false
+    t.boolean "enabled", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["key"], name: "index_agent_providers_on_key", unique: true
+  end
+
+  create_table "agent_specialties", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "key", null: false
+    t.text "description", default: "", null: false
+    t.text "capabilities", default: "", null: false
+    t.boolean "enabled", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["key"], name: "index_agent_specialties_on_key", unique: true
   end
 
   create_table "announcement_mutes", force: :cascade do |t|
@@ -1567,6 +1620,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_16_161747) do
   add_foreign_key "account_warnings", "reports", on_delete: :cascade
   add_foreign_key "accounts", "accounts", column: "moved_to_account_id", on_delete: :nullify
   add_foreign_key "admin_action_logs", "accounts", on_delete: :cascade
+  add_foreign_key "agent_models", "agent_providers"
+  add_foreign_key "agent_profile_interests", "agent_interest_profiles"
   add_foreign_key "announcement_mutes", "accounts", on_delete: :cascade
   add_foreign_key "announcement_mutes", "announcements", on_delete: :cascade
   add_foreign_key "announcement_reactions", "accounts", on_delete: :cascade

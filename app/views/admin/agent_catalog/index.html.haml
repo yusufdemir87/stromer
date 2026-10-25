@@ -1,0 +1,85 @@
+- content_for :page_title do
+  = t("admin.agent_catalog.#{controller.catalog_section}.title")
+
+- content_for :heading_actions do
+  = link_to t("admin.agent_catalog.#{controller.catalog_section}.add"), new_polymorphic_path([:admin, controller.catalog_model]), class: 'button'
+  - if @providers
+    = link_to t('admin.agent_catalog.providers.add'), new_admin_agent_provider_path, class: 'button'
+
+.agent-catalog-intro
+  %p= t("admin.agent_catalog.#{controller.catalog_section}.description")
+.agent-catalog-summary
+  .agent-catalog-summary__number= number_with_delimiter(@style_count)
+  %div
+    %strong= t('admin.agent_catalog.available_styles')
+    %p= t('admin.agent_catalog.style_formula')
+
+.agent-catalog-tabs
+  = link_to t('admin.agent_catalog.models.title'), admin_agent_models_path, class: ('active' if controller.catalog_section == 'models'), 'aria-current': ('page' if controller.catalog_section == 'models')
+  = link_to t('admin.agent_catalog.specialties.title'), admin_agent_specialties_path, class: ('active' if controller.catalog_section == 'specialties'), 'aria-current': ('page' if controller.catalog_section == 'specialties')
+  = link_to t('admin.agent_catalog.interests.title'), admin_agent_interest_profiles_path, class: ('active' if controller.catalog_section == 'interests'), 'aria-current': ('page' if controller.catalog_section == 'interests')
+
+- if @providers
+  %h2= t('admin.agent_catalog.providers.title')
+  - if @providers.empty?
+    .agent-catalog-empty
+      %p= t('admin.agent_catalog.providers.empty')
+      = link_to t('admin.agent_catalog.providers.add'), new_admin_agent_provider_path, class: 'button button-secondary'
+  - else
+    .table-wrapper
+      %table.table
+        %thead
+          %tr
+            %th= t('admin.agent_catalog.fields.name')
+            %th= t('admin.agent_catalog.fields.key')
+            %th= t('admin.agent_catalog.fields.enabled')
+            %th= t('admin.agent_catalog.actions')
+        %tbody
+          - @providers.each do |provider|
+            %tr
+              %td= provider.name
+              %td= provider.key
+              %td= t(provider.enabled? ? 'admin.agent_catalog.enabled' : 'admin.agent_catalog.disabled')
+              %td= render 'admin/agent_catalog/actions', record: provider
+    = paginate @providers, param_name: :providers_page
+  %h2= t('admin.agent_catalog.models.list_title')
+
+- if @records.empty?
+  .agent-catalog-empty
+    = material_symbol('smart_toy')
+    %h3= t('admin.agent_catalog.empty_title')
+    %p= t('admin.agent_catalog.empty')
+    = link_to t("admin.agent_catalog.#{controller.catalog_section}.add"), new_polymorphic_path([:admin, controller.catalog_model]), class: 'button'
+- else
+  .table-wrapper
+    %table.table
+      %thead
+        %tr
+          %th= t('admin.agent_catalog.fields.name')
+          %th= t(@providers ? 'admin.agent_catalog.fields.model_key' : 'admin.agent_catalog.fields.key')
+          - if @providers
+            %th= t('admin.agent_catalog.fields.agent_provider_id')
+          - if controller.catalog_model == AgentInterestProfile
+            %th= t('admin.agent_catalog.interests.mix')
+          %th= t('admin.agent_catalog.fields.enabled')
+          %th= t('admin.agent_catalog.actions')
+      %tbody
+        - @records.each do |record|
+          %tr
+            %td
+              = record.name
+              - if record.description.present?
+                %p.muted-hint= truncate(record.description, length: 160)
+            %td= @providers ? record.model_key : record.key
+            - if @providers
+              %td
+                = record.agent_provider.name
+                - unless record.agent_provider.enabled?
+                  %span.muted-hint= t('admin.agent_catalog.models.provider_disabled')
+            - if controller.catalog_model == AgentInterestProfile
+              %td
+                - record.agent_profile_interests.each do |interest|
+                  %div #{interest.name}: #{interest.weight}%
+            %td= t(record.enabled? ? 'admin.agent_catalog.enabled' : 'admin.agent_catalog.disabled')
+            %td= render 'admin/agent_catalog/actions', record: record
+  = paginate @records

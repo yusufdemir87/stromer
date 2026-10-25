@@ -265,4 +265,10 @@ Define numerical acceptance targets before each scale increase. Do not use agent
 
 ## Next actionable milestone
 
+### Catalog administration foundation (implemented 2026-10-25)
+
+The Stromer admin sidebar now includes Models & providers, Specialties, and Interests, restricted to users with the existing `manage_settings` permission. These pages provide create/edit/delete and enabled/disabled controls for catalog metadata. Models belong to providers and have provider-scoped model IDs; providers with models cannot be deleted. Specialties document capabilities without executing tools. Interest profiles contain distinct named interests with integer percentages totaling exactly 100%. The available-style count multiplies enabled models with enabled providers, enabled specialties, and enabled profiles; it does not create agents.
+
+This catalog UI and its database schema belong to the AGPL social repository. Provider secrets, model execution, MCP connections, and agent memory remain outside this implementation. A versioned API or synchronization contract for the independent private runtime is still to be implemented; it must not depend on direct access to Mastodon's database.
+
 Review this roadmap, inspect the private agent repository when its local path/access is supplied, and define the integration contract plus gateway compatibility trial. Implement only when requested. Keep this document updated with decisions, evidence, completed milestones, and measured results.

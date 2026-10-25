@@ -1,0 +1,9 @@
+%tr.nested-fields
+  %td
+    = f.hidden_field :id if f.object&.persisted?
+    = f.input :name, label: t('admin.agent_catalog.fields.interest'), wrapper: :with_label
+  %td
+    = f.input :weight, label: t('admin.agent_catalog.fields.weight'), wrapper: :with_label, input_html: { min: 1, max: 100, step: 1 }
+  %td
+    = link_to_remove_association f, class: 'table-action-link' do
+      = safe_join([material_symbol('close'), t('admin.agent_catalog.interests.remove_interest')])

@@ -1,0 +1,67 @@
+---
+en:
+  admin:
+    agent_catalog:
+      available_styles: Available agent styles
+      style_formula: Enabled models × specialties × interest profiles
+      empty_title: Build your agent catalog
+      actions: Actions
+      back: Back to catalog
+      confirm_delete: 'Delete %{name}? This cannot be undone.'
+      delete: Delete
+      deleted: Catalog entry deleted.
+      disabled: Disabled
+      edit: Edit
+      empty: No entries yet. Add an entry to start building the agent catalog.
+      enabled: Enabled
+      enabled_hint: Disabled entries are excluded from the available style count.
+      fields:
+        agent_provider_id: Provider
+        capabilities: Tools and capabilities
+        description: Description
+        enabled: Enabled
+        interest: Interest
+        key: Catalog key
+        model_key: Provider model ID
+        name: Name
+        weight: Weight (%)
+      interests:
+        add: Add interest profile
+        add_interest: Add interest
+        description: Each profile is one interest choice in the agent catalog. Combine several interests with weights totaling 100%.
+        edit: Edit interest profile
+        mix: Weighted interests
+        remove_interest: Remove interest
+        title: Interests
+        too_many: A profile can contain at most 100 interests.
+        weights_hint: Add up to 100 distinct interests. Use whole-number percentages from 1 to 100, totaling exactly 100%.
+      key_hint: A unique identifier using lowercase letters, numbers, hyphens, or underscores.
+      models:
+        add: Add model
+        choose_provider: Select a provider
+        description: Manage providers and their model choices. These are catalog definitions; provider credentials and execution are managed by the separate agent service.
+        edit: Edit model
+        key_hint: The exact model identifier accepted by this provider or gateway. Model IDs are case-sensitive and unique within a provider.
+        list_title: Models
+        provider_disabled: (provider disabled)
+        title: Models & providers
+      providers:
+        add: Add provider
+        edit: Edit provider
+        empty: Add a provider before creating its models.
+        title: Providers
+      saved: Catalog entry saved.
+      specialties:
+        add: Add specialty
+        capabilities_hint: Describe the tools, knowledge, and production capabilities needed for this profession. This field documents requirements; it does not configure or execute MCP tools.
+        description: Define professions and the capabilities they require, including knowledge, tools, and creative workflows.
+        edit: Edit specialty
+        title: Specialties
+      style_count:
+        one: '1 available style: enabled models (with enabled providers) × enabled specialties × enabled interest profiles. This does not create or run agents.'
+        other: '%{count} available styles: enabled models (with enabled providers) × enabled specialties × enabled interest profiles. This does not create or run agents.'
+  errors:
+    messages:
+      agent_interests_duplicate: Each interest may appear only once in a profile.
+      agent_interests_required: Add at least one interest.
+      agent_weights_total: Interest weights must total exactly 100%.

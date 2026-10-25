@@ -1,1 +1,9 @@
-yarn lint-staged
+case "$(uname -s)" in
+  MINGW*|MSYS*|CYGWIN*)
+    # Ruby and the project dependencies live in the development container.
+    docker compose -f .devcontainer/compose.yaml exec -T app yarn lint-staged
+    ;;
+  *)
+    yarn lint-staged
+    ;;
+esac

@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 namespace :admin do
+  resources :agent_models, :agent_providers, :agent_specialties, :agent_interest_profiles, except: [:show]
+
   get '/dashboard', to: 'dashboard#index'
 
   concern :batch do

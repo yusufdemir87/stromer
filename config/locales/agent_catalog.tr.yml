@@ -1,0 +1,67 @@
+---
+tr:
+  admin:
+    agent_catalog:
+      actions: İşlemler
+      available_styles: Kullanılabilir ajan stili
+      style_formula: Etkin modeller × uzmanlıklar × ilgi profilleri
+      empty_title: Ajan kataloğunuzu oluşturun
+      back: Kataloğa dön
+      confirm_delete: '%{name} silinsin mi? Bu işlem geri alınamaz.'
+      delete: Sil
+      deleted: Katalog kaydı silindi.
+      disabled: Devre dışı
+      edit: Düzenle
+      empty: Henüz kayıt yok. İlk kaydı ekleyerek ajan kataloğunuzu oluşturmaya başlayın.
+      enabled: Etkin
+      enabled_hint: Devre dışı kayıtlar kullanılabilir stil sayısına dahil edilmez.
+      fields:
+        agent_provider_id: Sağlayıcı
+        capabilities: Araçlar ve yetenekler
+        description: Açıklama
+        enabled: Etkin
+        interest: İlgi alanı
+        key: Katalog anahtarı
+        model_key: Sağlayıcı model kimliği
+        name: Ad
+        weight: Ağırlık (%)
+      interests:
+        add: İlgi profili ekle
+        add_interest: İlgi alanı ekle
+        description: Her profil bir ilgi alanı bileşimidir. Birden fazla ilgi alanını toplamı %100 olan ağırlıklarla birleştirin.
+        edit: İlgi profilini düzenle
+        mix: Ağırlıklı ilgi alanları
+        remove_interest: İlgi alanını kaldır
+        title: İlgi profilleri
+        too_many: Bir profil en fazla 100 ilgi alanı içerebilir.
+        weights_hint: En fazla 100 farklı ilgi alanı ekleyin. Ağırlıklar 1 ile 100 arasında tam sayı olmalı ve toplamı %100 olmalıdır.
+      key_hint: Küçük harf, rakam, tire veya alt çizgiden oluşan benzersiz bir kimlik.
+      models:
+        add: Model ekle
+        choose_provider: Sağlayıcı seçin
+        description: Ajanlarınızın kullanabileceği yapay zekâ sağlayıcılarını ve modellerini yönetin.
+        edit: Modeli düzenle
+        key_hint: Sağlayıcının kabul ettiği model kimliği. Büyük-küçük harfe duyarlıdır ve sağlayıcı içinde benzersiz olmalıdır.
+        list_title: Modeller
+        provider_disabled: (sağlayıcı devre dışı)
+        title: Modeller ve sağlayıcılar
+      providers:
+        add: Sağlayıcı ekle
+        edit: Sağlayıcıyı düzenle
+        empty: Modelleri eklemeden önce bir sağlayıcı oluşturun.
+        title: Sağlayıcılar
+      saved: Katalog kaydı kaydedildi.
+      specialties:
+        add: Uzmanlık ekle
+        capabilities_hint: Bu meslek için gerekli bilgi, araç ve üretim yeteneklerini açıklayın. Bu alan MCP araçlarını çalıştırmaz.
+        description: Yazarlardan müzisyenlere, mühendislerden sanatçılara ajanların mesleklerini ve ihtiyaç duydukları yetenekleri tanımlayın.
+        edit: Uzmanlığı düzenle
+        title: Uzmanlıklar
+      style_count:
+        one: '%{count} kullanılabilir ajan stili'
+        other: '%{count} kullanılabilir ajan stili'
+  errors:
+    messages:
+      agent_interests_duplicate: Her ilgi alanı profilde yalnızca bir kez yer alabilir.
+      agent_interests_required: En az bir ilgi alanı ekleyin.
+      agent_weights_total: İlgi alanlarının ağırlıkları toplamı %100 olmalıdır.
