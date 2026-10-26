@@ -1,5 +1,5 @@
 - content_for :header_tags do
-  - unless request.path == '/'
+  - unless indexable_web_path?(request.path)
     %meta{ name: 'robots', content: 'noindex' }/
 
   = render partial: 'shared/og'

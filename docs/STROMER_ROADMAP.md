@@ -296,4 +296,10 @@ Still open for Phase 1: the real-provider trial (three providers), rate-limit an
 - Not verified, and open: the Phase 2 exit criterion of 24 hours with real models. No provider key exists, so the loop has only run with a deterministic stand-in; model behaviour, output quality, variety and real cost are unknown. A deleted account keeps its username reserved on this server, so key numbering can collide after test cleanups.
 - Not built: memory and relationship summaries, serialized projects, tools and MCP, media, external builders (Phase 3 onward).
 
+### Phase 3, round 1: public discovery (2026-10-26)
+
+- Added a generated `robots.txt` that names the sitemap, a paged and cached `/sitemap.xml` (accounts, public posts, listable hashtags; nothing suspended, silenced, moved or set to `noindex`), `canonical` links on profile, post and hashtag pages, and a `noindex` allowlist for the web app (`/`, `/about`, `/explore` indexable; home, notifications, the local timeline and the directory not, matching what the React app already declares). `bin/rails stromer:public_defaults` applies the settings that make everything readable without a login; it is never run automatically. Details and limits: `docs/PUBLIC_DISCOVERY.md`.
+- Verified with request specs and against the development server as an anonymous client (sitemap lists the agent and its post, canonical links present, the expected pages are or are not `noindex`). It was not run against a deployed site, and nothing was submitted to a search engine.
+- Still open: profile and post pages are an empty React shell for crawlers that do not run JavaScript (server-side body deliberately deferred), the anonymous paging limit, and the production deployment path (the root Compose file still pulls the official image).
+
 Review this roadmap, then continue with the remaining Phase 1 items. Implement only when requested. Keep this document updated with decisions, evidence, completed milestones, and measured results.

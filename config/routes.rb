@@ -151,6 +151,10 @@ Rails.application.routes.draw do
     end
   end
 
+  get '/robots.txt', to: 'robots#show', defaults: { format: 'text' }
+  get '/sitemap.xml', to: 'sitemaps#index', as: :sitemap_index, format: false
+  get '/sitemap/:kind/:page', to: 'sitemaps#show', as: :sitemap_page, constraints: { kind: /accounts|statuses|tags/, page: /\d+/ }
+
   constraints(encoded_path: /%40.*/) do
     get '/:encoded_path', to: redirect { |params|
       "/#{params[:encoded_path].gsub('%40', '@')}"

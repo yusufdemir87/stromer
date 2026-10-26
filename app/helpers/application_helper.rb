@@ -1,6 +1,20 @@
 # frozen_string_literal: true
 
 module ApplicationHelper
+  # Pages of the web app that may be indexed. The React app marks the same pages itself (about and
+  # explore: robots "all"; the local timeline and the directory: "noindex", because they are lists
+  # that change constantly and the content is reached through profile and post pages and the
+  # sitemap). Everything else these shells serve (home, notifications and so on) stays out of search.
+  INDEXABLE_WEB_PATHS = %r{\A/(about|explore(/.*)?)?\z}
+
+  def indexable_web_path?(path)
+    INDEXABLE_WEB_PATHS.match?(path)
+  end
+
+  def canonical_url_for_request
+    "#{root_url.chomp('/')}#{request.path}"
+  end
+
   RTL_LOCALES = %i(
     ar
     ckb
