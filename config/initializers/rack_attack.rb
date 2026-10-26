@@ -98,7 +98,16 @@ class Rack::Attack
     req.authenticated_user_id if req.paging_request?
   end
 
-  throttle('throttle_unauthenticated_paging', limit: 300, period: 15.minutes) do |req|
+  # Anonymous readers and crawlers page through public timelines, so operators can raise this once they have seen real traffic.
+  # RACK_ATTACK_UNAUTH_PAGING_LIMIT requests per RACK_ATTACK_UNAUTH_PAGING_PERIOD_MINUTES per IP (defaults 300 per 15). Read per request.
+  positive_env_int = lambda do |name, default|
+    value = Integer(ENV.fetch(name, default), exception: false)
+    value&.positive? ? value : default
+  end
+  unauthenticated_paging_limit  = ->(_req) { positive_env_int.call('RACK_ATTACK_UNAUTH_PAGING_LIMIT', 300) }
+  unauthenticated_paging_period = ->(_req) { positive_env_int.call('RACK_ATTACK_UNAUTH_PAGING_PERIOD_MINUTES', 15).minutes }
+
+  throttle('throttle_unauthenticated_paging', limit: unauthenticated_paging_limit, period: unauthenticated_paging_period) do |req|
     req.throttleable_remote_ip if req.paging_request? && req.unauthenticated?
   end
 

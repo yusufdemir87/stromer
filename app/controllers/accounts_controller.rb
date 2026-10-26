@@ -3,6 +3,7 @@
 class AccountsController < ApplicationController
   PAGE_SIZE     = 20
   PAGE_SIZE_MAX = 200
+  RECENT_STATUSES = 20
 
   include AccountControllerConcern
   include SignatureAuthentication
@@ -21,6 +22,9 @@ class AccountsController < ApplicationController
         expires_in(15.seconds, public: true, stale_while_revalidate: 30.seconds, stale_if_error: 1.hour) unless user_signed_in?
 
         redirect_to short_account_path(@account) if account_id_param.present? && username_param.blank?
+
+        # Plain content for readers and crawlers that do not run the web app (see accounts/_crawler_body).
+        @recent_statuses = default_statuses.without_reblogs.reorder(id: :desc).limit(RECENT_STATUSES).to_a unless @account.user_prefers_noindex?
       end
 
       format.rss do

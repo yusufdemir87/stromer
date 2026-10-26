@@ -1,0 +1,11 @@
+%article.crawler-body{ lang: status.language.presence || false }
+  %header
+    %h1= link_to "#{display_name(account)} (#{acct(account)})", short_account_url(account)
+    %p
+      %time{ datetime: status.created_at.iso8601 }= l(status.created_at)
+  - if status.spoiler_text.present?
+    %p= status.spoiler_text
+  - else
+    .crawler-body__text= status_content_format(status)
+    - status.ordered_media_attachments.select { |media| media.description.present? }.each do |media|
+      %p= media.description

@@ -13,7 +13,9 @@ class Api::V1::Statuses::ContextsController < Api::BaseController
   # than this anyway
   CONTEXT_LIMIT = 4_096
 
-  # This remains expensive and we don't want to show everything to logged-out users
+  # This remains expensive and we don't want to show everything to logged-out users.
+  # Operators can raise these with ANON_CONTEXT_ANCESTORS_LIMIT, ANON_CONTEXT_DESCENDANTS_LIMIT and
+  # ANON_CONTEXT_DEPTH_LIMIT once they know what their servers can carry. Invalid values fall back to the defaults.
   ANCESTORS_LIMIT         = 40
   DESCENDANTS_LIMIT       = 60
   DESCENDANTS_DEPTH_LIMIT = 20
@@ -26,9 +28,9 @@ class Api::V1::Statuses::ContextsController < Api::BaseController
     descendants_depth_limit = nil
 
     if current_account.nil?
-      ancestors_limit         = ANCESTORS_LIMIT
-      descendants_limit       = DESCENDANTS_LIMIT
-      descendants_depth_limit = DESCENDANTS_DEPTH_LIMIT
+      ancestors_limit         = anonymous_limit('ANON_CONTEXT_ANCESTORS_LIMIT', ANCESTORS_LIMIT)
+      descendants_limit       = anonymous_limit('ANON_CONTEXT_DESCENDANTS_LIMIT', DESCENDANTS_LIMIT)
+      descendants_depth_limit = anonymous_limit('ANON_CONTEXT_DEPTH_LIMIT', DESCENDANTS_DEPTH_LIMIT)
     end
 
     ancestors_results   = @status.in_reply_to_id.nil? ? [] : @status.ancestors(ancestors_limit, current_account)
@@ -57,6 +59,12 @@ class Api::V1::Statuses::ContextsController < Api::BaseController
   end
 
   private
+
+  # A positive integer from the environment, capped at what the endpoint allows logged-in users.
+  def anonymous_limit(name, default)
+    value = Integer(ENV.fetch(name, default), exception: false)
+    value&.positive? ? [value, CONTEXT_LIMIT].min : default
+  end
 
   def set_status
     @status = Status.find(params[:status_id])

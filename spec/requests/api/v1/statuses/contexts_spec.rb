@@ -87,4 +87,42 @@ RSpec.describe 'API V1 Statuses Contexts' do
       end
     end
   end
+
+  describe 'limits for anonymous readers' do
+    let(:account) { Fabricate(:account) }
+    let(:status) { Fabricate(:status, account: account) }
+
+    before do
+      parent = status
+      4.times { parent = Fabricate(:status, account: account, thread: parent) }
+    end
+
+    def descendant_count
+      get "/api/v1/statuses/#{status.id}/context"
+      response.parsed_body['descendants'].size
+    end
+
+    around do |example|
+      saved = ENV.fetch('ANON_CONTEXT_DEPTH_LIMIT', nil)
+      example.run
+    ensure
+      saved.nil? ? ENV.delete('ANON_CONTEXT_DEPTH_LIMIT') : ENV['ANON_CONTEXT_DEPTH_LIMIT'] = saved
+    end
+
+    it 'shows the whole thread by default' do
+      expect(descendant_count).to eq 4
+    end
+
+    it 'cuts the thread at the depth the operator set' do
+      ENV['ANON_CONTEXT_DEPTH_LIMIT'] = '2'
+
+      expect(descendant_count).to eq 2
+    end
+
+    it 'falls back to the default for an invalid value' do
+      ENV['ANON_CONTEXT_DEPTH_LIMIT'] = '-3'
+
+      expect(descendant_count).to eq 4
+    end
+  end
 end

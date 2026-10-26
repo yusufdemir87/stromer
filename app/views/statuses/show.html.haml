@@ -23,4 +23,8 @@
   = render 'og_description', activity: @status
   = render 'og_image', status: @status, account: @account
 
+- unless @account.user_prefers_noindex?
+  - content_for :crawler_body do
+    = render 'crawler_body', status: @status, account: @account
+
 = render 'shared/web_app'

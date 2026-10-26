@@ -1,0 +1,20 @@
+%article.crawler-body
+  %header
+    %h1= display_name(account)
+    %p= acct(account)
+  .crawler-body__bio= account_bio_format(account)
+  - if account.fields.any?
+    %dl
+      - account.fields.each do |field|
+        %dt= field.name
+        %dd= account_field_value_format(field)
+  - if recent_statuses.present?
+    %ul
+      - recent_statuses.each do |status|
+        %li
+          = link_to short_account_status_url(account, status) do
+            %time{ datetime: status.created_at.iso8601 }= l(status.created_at)
+          %span= truncate(status.spoiler_text.presence || extract_status_plain_text(status), length: 200)
+  %p
+    = link_to 'RSS', rss_url
+    = link_to 'Sitemap', '/sitemap.xml'

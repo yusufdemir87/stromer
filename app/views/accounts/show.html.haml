@@ -15,4 +15,8 @@
   = opengraph 'og:type', 'profile'
   = render 'og', account: @account, url: short_account_url(@account, only_path: false)
 
+- unless @account.user_prefers_noindex?
+  - content_for :crawler_body do
+    = render 'crawler_body', account: @account, recent_statuses: @recent_statuses
+
 = render partial: 'shared/web_app'

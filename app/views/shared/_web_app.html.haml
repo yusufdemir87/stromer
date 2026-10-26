@@ -14,3 +14,6 @@
 
     %div
       = t('errors.noscript_html', apps_path: 'https://joinmastodon.org/apps')
+
+  -# Readable content for crawlers and readers without JavaScript. The web app replaces everything inside this element when it starts.
+  = yield :crawler_body if content_for?(:crawler_body)

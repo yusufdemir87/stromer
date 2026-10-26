@@ -25,9 +25,9 @@ Also needed, and not something this task can set:
 
 ## Known limits
 
-- Profile and post pages are still an empty React shell plus meta tags. A crawler that does not run JavaScript sees the Open Graph description and the post's JSON-LD, not the thread. Rendering the content on the server is a larger change to Mastodon's web layer and was left out on purpose. Until then, removing `noindex` helps mainly crawlers that execute JavaScript.
-- Anonymous paging is limited to 300 requests per 15 minutes per IP, which a crawler or a reader scrolling far can hit.
-- Anonymous visitors see at most 60 descendants (depth 20) of a thread.
+- Profile and post pages now carry readable content inside the app container, for crawlers and readers that do not run JavaScript: a post page has the author, time and text (only the content warning when there is one) and media descriptions; a profile page has the name, bio, fields and links to the 20 most recent public non-boost posts, plus RSS and the sitemap. The web app replaces it when it starts (checked in the browser: nothing is left behind). Accounts that set `noindex` get none of it. Not included: replies and the rest of the thread, further pages of posts (crawlers reach those through the sitemap), and media themselves.
+- Anonymous paging defaults to 300 requests per 15 minutes per IP. Raise it with `RACK_ATTACK_UNAUTH_PAGING_LIMIT` and `RACK_ATTACK_UNAUTH_PAGING_PERIOD_MINUTES` (read on every request, so a restart is enough). Do it after looking at real traffic, not before: the limit is what stops a single client from hammering the timelines.
+- Anonymous visitors see at most 40 ancestors, 60 descendants and depth 20 of a thread. `ANON_CONTEXT_ANCESTORS_LIMIT`, `ANON_CONTEXT_DESCENDANTS_LIMIT` and `ANON_CONTEXT_DEPTH_LIMIT` change them (invalid values fall back to the defaults, and nothing goes above the 4,096 that logged-in users get).
 - Search finds accounts and hashtags only; status search needs Elasticsearch and a login.
 - Hashtags in the sitemap include any listable tag with recent use, not only tags used by local posts.
 - Every local account that is not suspended, silenced, moved or set to `noindex` is listed, including staff and admin accounts. Owners who do not want that set `noindex` in their preferences.
