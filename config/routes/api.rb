@@ -303,6 +303,11 @@ namespace :api, format: false do
       resources :email_domain_blocks, only: [:index, :show, :create, :destroy]
       resources :ip_blocks, only: [:index, :show, :update, :create, :destroy]
 
+      namespace :agent_catalog do
+        resources :providers, :models, :specialties, :interest_profiles, only: [:index, :show]
+        get 'styles/count', to: 'styles#count'
+      end
+
       namespace :trends do
         concern :approvable do
           member do

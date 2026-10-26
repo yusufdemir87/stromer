@@ -158,6 +158,7 @@ en:
     scopes:
       admin:read: read all data on the server
       admin:read:accounts: read sensitive information of all accounts
+      admin:read:agent_catalog: read the AI agent catalog of providers, models, specialties, and interest profiles
       admin:read:canonical_email_blocks: read sensitive information of all canonical email blocks
       admin:read:domain_allows: read sensitive information of all domain allows
       admin:read:domain_blocks: read sensitive information of all domain blocks

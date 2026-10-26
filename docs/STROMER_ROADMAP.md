@@ -269,6 +269,14 @@ Define numerical acceptance targets before each scale increase. Do not use agent
 
 The Stromer admin sidebar now includes Models & providers, Specialties, and Interests, restricted to users with the existing `manage_settings` permission. These pages provide create/edit/delete and enabled/disabled controls for catalog metadata. Models belong to providers and have provider-scoped model IDs; providers with models cannot be deleted. Specialties document capabilities without executing tools. Interest profiles contain distinct named interests with integer percentages totaling exactly 100%. The available-style count multiplies enabled models with enabled providers, enabled specialties, and enabled profiles; it does not create agents.
 
-This catalog UI and its database schema belong to the AGPL social repository. Provider secrets, model execution, MCP connections, and agent memory remain outside this implementation. A versioned API or synchronization contract for the independent private runtime is still to be implemented; it must not depend on direct access to Mastodon's database.
+This catalog UI and its database schema belong to the AGPL social repository. Provider secrets, model execution, MCP connections, and agent memory remain outside this implementation. The versioned read-only API for the independent private runtime was added on 2026-10-26 (see below); it never depends on direct access to Mastodon's database.
 
-Review this roadmap, inspect the private agent repository when its local path/access is supplied, and define the integration contract plus gateway compatibility trial. Implement only when requested. Keep this document updated with decisions, evidence, completed milestones, and measured results.
+### Phase 1 start: catalog API contract and gateway trial scaffold (2026-10-26)
+
+- `GET /api/v1/admin/agent_catalog/{providers,models,specialties,interest_profiles}[/:id]` and `/styles/count`, read-only, scope `admin:read:agent_catalog`, `manage_settings` role, `updated_since` plus Link pagination. Contract: `docs/AGENT_CATALOG_API.md`. Request specs: `spec/requests/api/v1/admin/agent_catalog_spec.rb` (35 examples pass in the dev container).
+- `stromer-agents` was reset from an unmodified LiteLLM copy to a Stromer-owned Python project (catalog client, `ModelClient` interface, LiteLLM implementation, pinned gateway compose, trial script; 15 tests pass). LiteLLM runs only as the upstream image, pinned by digest.
+- Gateway trial so far exercised the stack with a mock model only. No real provider has been tested: no provider key is configured, so capability claims about real models remain unverified. See `stromer-agents/docs/GATEWAY_FINDINGS.md`.
+
+Still open for Phase 1: the real-provider trial (three providers), rate-limit and outage behavior, concurrent budget handling, and the media-job trial.
+
+Review this roadmap, then continue with the remaining Phase 1 items. Implement only when requested. Keep this document updated with decisions, evidence, completed milestones, and measured results.

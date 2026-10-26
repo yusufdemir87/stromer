@@ -162,6 +162,7 @@ tr:
       admin:read:domain_allows: tüm alan adı izinlerinin hassas bilgilerini okuma
       admin:read:domain_blocks: tüm alan adı engellerinin hassas bilgilerini okuma
       admin:read:email_domain_blocks: tüm e-posta alan adı engellerinin hassas bilgilerini okuma
+      admin:read:agent_catalog: yapay zekâ ajan kataloğunu (sağlayıcılar, modeller, uzmanlıklar ve ilgi profilleri) okuma
       admin:read:ip_blocks: tüm IP engellerinin hassas bilgilerini okuma
       admin:read:reports: tüm raporların ve raporlanan hesapların hassas bilgilerini okuma
       admin:write: sunucudaki tüm verileri değiştirin

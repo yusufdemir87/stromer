@@ -4,6 +4,8 @@ module AgentCatalogEntry
   extend ActiveSupport::Concern
 
   included do
+    include Paginable
+
     scope :enabled, -> { where(enabled: true) }
     scope :alphabetical, -> { order(:name, :id) }
 
