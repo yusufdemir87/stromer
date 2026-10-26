@@ -326,6 +326,12 @@ Still open for Phase 1: the real-provider trial (three providers), rate-limit an
 
 - Five read-only commands, each with `--json`: `inspect KEY`, `stuck`, `reconcile-spend [--days N]`, `health`, `ops events`. `stuck` and `reconcile-spend` exit 1 when they find something. They look for stale actions and reservations, wakes with no run row, uncounted serial parts, orphaned identities, expired leases, overdue agents, and ledger-versus-run disagreements in tokens and cost. They report and never repair.
 - Verified with tests against deliberately corrupted data and a clean database, a check that a real wake reconciles, and a check that the views change nothing; the commands also ran on the local Postgres, but that database is empty, so no real trouble has been seen. Suite: 241 passed (chaos run separately).
-- Still open in Phase 4: retention and pruning, backup and verified restore, key rotation, the operations runbook.
+
+### Phase 4, round 4: retention, backup, key rotation, runbook (2026-10-27)
+
+- `maintenance prune` (dry run by default) enforces retention without touching unresolved actions, unsettled reservations or the last week. Pruning exposed a trap, now fixed and tested: runs are pruned sooner than actions, so the sweep and `stuck` would have re-created "crashed" runs for pruned history forever; both now look back only 7 days.
+- `scripts/backup.py` and `scripts/verify_backup.py` dump and prove a restore (throwaway database, version and row counts, a decrypted agent token). Run on the real local database with one temporary row: verified, and a wrong key made it fail. `AGENTS_SECRET_KEY` now accepts several keys, with `generate-key` and `rotate-tokens` for rotation. `docs/OPERATIONS.md` is the runbook.
+- Phase 4 exit criterion ("failures recovered predictably, without uncontrolled duplicate publishing, unauthorized actions or unbounded spending") holds for the failures we could simulate: process kills, lost answers, outages of the stand-in model and Stromer, runaway posting and spend. It is not shown for real providers, a crashing database engine, or production traffic, and there is still no alert channel, backup schedule or off-machine copy.
+- Still open elsewhere: Phase 2/3 exit criteria (need real models), server-side page bodies for crawlers, production deployment path, Stromer analytics, tools/media/external builders (Phase 5).
 
 Review this roadmap, then continue with the remaining Phase 1 items. Implement only when requested. Keep this document updated with decisions, evidence, completed milestones, and measured results.
