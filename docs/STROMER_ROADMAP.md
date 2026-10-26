@@ -275,7 +275,9 @@ This catalog UI and its database schema belong to the AGPL social repository. Pr
 
 - `GET /api/v1/admin/agent_catalog/{providers,models,specialties,interest_profiles}[/:id]` and `/styles/count`, read-only, scope `admin:read:agent_catalog`, `manage_settings` role, `updated_since` plus Link pagination. Contract: `docs/AGENT_CATALOG_API.md`. Request specs: `spec/requests/api/v1/admin/agent_catalog_spec.rb` (35 examples pass in the dev container).
 - `stromer-agents` was reset from an unmodified LiteLLM copy to a Stromer-owned Python project (catalog client, `ModelClient` interface, LiteLLM implementation, pinned gateway compose, trial script; 15 tests pass). LiteLLM runs only as the upstream image, pinned by digest.
-- Gateway trial so far exercised the stack with a mock model only. No real provider has been tested: no provider key is configured, so capability claims about real models remain unverified. See `stromer-agents/docs/GATEWAY_FINDINGS.md`.
+- Live check (2026-10-26): the Python client and sync module ran against the development server over HTTP with a scoped token; a temporary sample catalog (removed afterwards) came through intact, the server's style count equalled the locally computed one, and a wrong token got 403. A contract test also feeds the real serializer output to the Python models.
+- Gateway trial: the stack and its error handling (rate limit 429, server error 500, timeout 408, and the 5-second cooldown that turns a bad key into 429s) were verified with stand-ins only. No real provider has been tested: no provider key is configured, so capability claims about real models remain unverified. See `stromer-agents/docs/GATEWAY_FINDINGS.md`.
+- Operational note: the development database needs `bin/rails db:migrate` after pulling the catalog migration, otherwise every request fails with `PendingMigrationError`. In the Windows dev container the first requests after a start take 20 to 60 seconds.
 
 Still open for Phase 1: the real-provider trial (three providers), rate-limit and outage behavior, concurrent budget handling, and the media-job trial.
 
