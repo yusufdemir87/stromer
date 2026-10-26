@@ -153,6 +153,12 @@ Status: source review complete; operational checks remain.
 - Test anonymous browsing and core account/media interactions.
 - Define development, staging, and production deployment boundaries, including initial federation policy. Isolation during early experiments is a recommendation pending decision.
 
+Findings from the operational check (2026-10-26):
+
+- The version mismatch is confirmed: the root `docker-compose.yml` pulls the official `ghcr.io/mastodon/mastodon:v4.7.3` and `mastodon-streaming:v4.7.3` images, so a deployment from it would not run this fork's code. A deployment path that builds and runs this repository's image, and the matching source offer, still has to be decided.
+- Background workers: 30 jobs had died on Elasticsearch `401` because the development `es` container predated the `xpack.security.enabled: 'false'` change; recreating that container fixed it. One scheduler entry in `config/sidekiq.yml` lacked its `Scheduler::` prefix (upstream bug) and is corrected. Sidekiq reads the file at start, so the correction applies after the next restart.
+- Anonymous browsing and core account and media flows are still untested.
+
 Exit: repeatable startup, known deployed source version, functional social flows, and documented public-access gaps.
 
 ### Phase 1 — Integration contract and gateway trial
