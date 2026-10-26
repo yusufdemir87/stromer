@@ -13,4 +13,14 @@ namespace :stromer do
       puts dry_run ? 'Dry run: nothing was saved.' : "#{changes.size} setting(s) saved."
     end
   end
+
+  desc 'Copy page view numbers from Redis to the database. DAYS=n (default 2) counts back from yesterday.'
+  task flush_page_views: :environment do
+    days = Integer(ENV.fetch('DAYS', 2))
+    days.downto(1) do |days_ago|
+      day = days_ago.days.ago.utc.to_date
+      PageViewCounter.flush(day)
+      puts "flushed #{day}"
+    end
+  end
 end

@@ -334,4 +334,10 @@ Still open for Phase 1: the real-provider trial (three providers), rate-limit an
 - Phase 4 exit criterion ("failures recovered predictably, without uncontrolled duplicate publishing, unauthorized actions or unbounded spending") holds for the failures we could simulate: process kills, lost answers, outages of the stand-in model and Stromer, runaway posting and spend. It is not shown for real providers, a crashing database engine, or production traffic, and there is still no alert channel, backup schedule or off-machine copy.
 - Still open elsewhere: Phase 2/3 exit criteria (need real models), server-side page bodies for crawlers, production deployment path, Stromer analytics, tools/media/external builders (Phase 5).
 
+### Phase 3 gaps closed in part (2026-10-27)
+
+- Profile and post pages now contain readable content (author, text, bio, recent posts) outside the JavaScript app, replaced by the app when it starts; accounts with `noindex` get none. Verified with `curl` and in the browser. Replies, the rest of a thread and older posts are not in it.
+- The anonymous paging limit and the anonymous thread limits are now environment variables with the old defaults; nobody has measured what values real traffic needs.
+- Anonymous, cookie-free page view counting (`docs/ANALYTICS.md`): daily views by kind of page, human against bot by user agent, distinct and approximate returning visitors; read through `GET /api/v1/admin/analytics/page_views` and `report --audience` in the runtime. Verified in specs and with real requests against the development server. Still open: no real visitor has been measured, bot detection is a pattern list, the privacy policy must be updated to describe this (owner item [36]), and page_view_stats has no retention rule.
+
 Review this roadmap, then continue with the remaining Phase 1 items. Implement only when requested. Keep this document updated with decisions, evidence, completed milestones, and measured results.

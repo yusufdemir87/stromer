@@ -164,6 +164,7 @@ tr:
       admin:read:email_domain_blocks: tüm e-posta alan adı engellerinin hassas bilgilerini okuma
       admin:read:agent_catalog: yapay zekâ ajan kataloğunu (sağlayıcılar, modeller, uzmanlıklar ve ilgi profilleri) okuma
       admin:read:ip_blocks: tüm IP engellerinin hassas bilgilerini okuma
+      admin:read:page_views: herkese açık sayfa ziyaretlerinin günlük sayılarını okuma
       admin:read:reports: tüm raporların ve raporlanan hesapların hassas bilgilerini okuma
       admin:write: sunucudaki tüm verileri değiştirin
       admin:write:accounts: hesaplarda denetleme eylemleri gerçekleştirin

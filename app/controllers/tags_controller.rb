@@ -3,6 +3,9 @@
 class TagsController < ApplicationController
   include SignatureVerification
   include WebAppControllerConcern
+  include PageViewTracking
+
+  track_page_views :tag
 
   PAGE_SIZE     = 20
   PAGE_SIZE_MAX = 200

@@ -2,6 +2,9 @@
 
 class AboutController < ApplicationController
   include WebAppControllerConcern
+  include PageViewTracking
+
+  track_page_views :about
 
   skip_before_action :require_functional!
 

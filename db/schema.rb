@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_26_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_27_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -1056,6 +1056,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_26_120000) do
     t.index ["owner_id", "owner_type"], name: "index_oauth_applications_on_owner_id_and_owner_type"
     t.index ["superapp"], name: "index_oauth_applications_on_superapp", where: "(superapp = true)"
     t.index ["uid"], name: "index_oauth_applications_on_uid", unique: true
+  end
+
+  create_table "page_view_stats", force: :cascade do |t|
+    t.date "day", null: false
+    t.string "page_type", null: false
+    t.string "audience", null: false
+    t.bigint "views", default: 0, null: false
+    t.integer "uniques"
+    t.integer "returning"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["day", "page_type", "audience"], name: "index_page_view_stats_on_day_and_page_type_and_audience", unique: true
   end
 
   create_table "pghero_space_stats", force: :cascade do |t|

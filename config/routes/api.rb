@@ -303,6 +303,10 @@ namespace :api, format: false do
       resources :email_domain_blocks, only: [:index, :show, :create, :destroy]
       resources :ip_blocks, only: [:index, :show, :update, :create, :destroy]
 
+      namespace :analytics do
+        resources :page_views, only: [:index]
+      end
+
       namespace :agent_catalog do
         resources :providers, :models, :specialties, :interest_profiles, only: [:index, :show]
         resources :agents, only: [:index, :show, :create, :update] do

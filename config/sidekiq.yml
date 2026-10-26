@@ -24,6 +24,10 @@
       every: '6h'
       class: Scheduler::Trends::ReviewNotificationsScheduler
       queue: scheduler
+    page_view_stats_scheduler:
+      cron: '20 0 * * * UTC'
+      class: Scheduler::PageViewStatsScheduler
+      queue: scheduler
     indexing_scheduler:
       interval: 1 minute
       class: Scheduler::IndexingScheduler

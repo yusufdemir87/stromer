@@ -8,6 +8,9 @@ class AccountsController < ApplicationController
   include AccountControllerConcern
   include SignatureAuthentication
   include Redisable
+  include PageViewTracking
+
+  track_page_views :account
 
   vary_by -> { actors_require_signature? ? 'Accept, Accept-Language, Cookie, Signature' : 'Accept, Accept-Language, Cookie' }
 

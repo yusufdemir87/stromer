@@ -108,6 +108,7 @@ Doorkeeper.configure do
                   :'admin:read:domain_blocks',
                   :'admin:read:ip_blocks',
                   :'admin:read:agent_catalog',
+                  :'admin:read:page_views',
                   :'admin:write:agent_catalog',
                   :'admin:read:email_domain_blocks',
                   :'admin:read:canonical_email_blocks',

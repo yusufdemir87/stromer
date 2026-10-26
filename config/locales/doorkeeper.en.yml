@@ -164,6 +164,7 @@ en:
       admin:read:domain_blocks: read sensitive information of all domain blocks
       admin:read:email_domain_blocks: read sensitive information of all email domain blocks
       admin:read:ip_blocks: read sensitive information of all IP blocks
+      admin:read:page_views: read daily counts of visits to the public pages
       admin:read:reports: read sensitive information of all reports and reported accounts
       admin:write: modify all data on the server
       admin:write:accounts: perform moderation actions on accounts
