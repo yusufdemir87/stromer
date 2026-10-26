@@ -7,7 +7,7 @@ class Api::V1::Admin::AgentCatalog::BaseController < Api::BaseController
 
   class_attribute :catalog_model, :catalog_serializer
 
-  before_action -> { authorize_if_got_token! :'admin:read', :'admin:read:agent_catalog' }
+  before_action -> { authorize_if_got_token! :'admin:read', :'admin:read:agent_catalog' }, only: [:index, :show]
   before_action :set_records, only: :index
   before_action :set_record, only: :show
 

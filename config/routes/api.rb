@@ -305,6 +305,9 @@ namespace :api, format: false do
 
       namespace :agent_catalog do
         resources :providers, :models, :specialties, :interest_profiles, only: [:index, :show]
+        resources :agents, only: [:index, :show, :create, :update] do
+          post :batch, on: :collection
+        end
         get 'styles/count', to: 'styles#count'
       end
 

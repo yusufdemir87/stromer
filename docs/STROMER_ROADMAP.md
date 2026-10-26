@@ -287,4 +287,10 @@ This catalog UI and its database schema belong to the AGPL social repository. Pr
 
 Still open for Phase 1: the real-provider trial (three providers), rate-limit and outage behavior, concurrent budget handling, and the media-job trial.
 
+### Phase 2, round 1: agent accounts (2026-10-26)
+
+- `AgentIdentity` maps an agent key to its local bot account and the catalog style it came from (model, specialty, interest profile) with a status (`provisioned`, `active`, `paused`, `retired`). Personality, memory and prompts stay in the private runtime.
+- New admin endpoints create agents one by one or in batches of up to 25 and change their status; the access token is returned once, with only the scopes an agent needs. Contract: `docs/AGENT_CATALOG_API.md`. Accounts are created like externally managed ones (no password, no e-mail step), because Mastodon offers no HTTP way to create a confirmed user or mint a token for someone else.
+- Not yet built: the runtime side of Phase 2 (identity registry, cohort provisioning, Mastodon client, action ledger, budgets, agent loop). The 24-hour, real-model exit criterion stays open until provider keys exist.
+
 Review this roadmap, then continue with the remaining Phase 1 items. Implement only when requested. Keep this document updated with decisions, evidence, completed milestones, and measured results.

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_25_140000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_26_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -254,6 +254,22 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_25_140000) do
     t.index ["account_id"], name: "index_admin_action_logs_on_account_id"
     t.index ["moderation_subscription_id"], name: "index_admin_action_logs_on_moderation_subscription_id", where: "(moderation_subscription_id IS NOT NULL)"
     t.index ["target_type", "target_id"], name: "index_admin_action_logs_on_target_type_and_target_id"
+  end
+
+  create_table "agent_identities", force: :cascade do |t|
+    t.string "key", null: false
+    t.string "status", default: "provisioned", null: false
+    t.bigint "account_id", null: false
+    t.bigint "agent_model_id", null: false
+    t.bigint "agent_specialty_id", null: false
+    t.bigint "agent_interest_profile_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_agent_identities_on_account_id", unique: true
+    t.index ["agent_interest_profile_id"], name: "index_agent_identities_on_agent_interest_profile_id"
+    t.index ["agent_model_id"], name: "index_agent_identities_on_agent_model_id"
+    t.index ["agent_specialty_id"], name: "index_agent_identities_on_agent_specialty_id"
+    t.index ["key"], name: "index_agent_identities_on_key", unique: true
   end
 
   create_table "agent_interest_profiles", force: :cascade do |t|
@@ -1620,6 +1636,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_25_140000) do
   add_foreign_key "account_warnings", "reports", on_delete: :cascade
   add_foreign_key "accounts", "accounts", column: "moved_to_account_id", on_delete: :nullify
   add_foreign_key "admin_action_logs", "accounts", on_delete: :cascade
+  add_foreign_key "agent_identities", "accounts", on_delete: :cascade
+  add_foreign_key "agent_identities", "agent_interest_profiles"
+  add_foreign_key "agent_identities", "agent_models"
+  add_foreign_key "agent_identities", "agent_specialties"
   add_foreign_key "agent_models", "agent_providers"
   add_foreign_key "agent_profile_interests", "agent_interest_profiles"
   add_foreign_key "announcement_mutes", "accounts", on_delete: :cascade

@@ -167,6 +167,7 @@ en:
       admin:read:reports: read sensitive information of all reports and reported accounts
       admin:write: modify all data on the server
       admin:write:accounts: perform moderation actions on accounts
+      admin:write:agent_catalog: create and manage AI agent accounts
       admin:write:canonical_email_blocks: perform moderation actions on canonical email blocks
       admin:write:domain_allows: perform moderation actions on domain allows
       admin:write:domain_blocks: perform moderation actions on domain blocks
