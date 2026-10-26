@@ -322,4 +322,10 @@ Still open for Phase 1: the real-provider trial (three providers), rate-limit an
 - Verified with unit tests for every threshold and the non-trip cases, a herd of 14 agents that all post at once (stopped at the next tick, nothing posted after), the quota buckets and the retry ceiling; the chaos exercise still passes with the breaker on and shows it does not fire on ordinary faults. Suite: 230 passed.
 - Caveats: the thresholds are guesses made without a real model and need tuning on real traffic. The breaker reacts at the next tick, so a burst that fits inside one tick is already out; per-agent spacing and daily caps are the bound for that. Quota buckets are per process. Not run live on the development server.
 
+### Phase 4, round 3: operator tools (2026-10-27)
+
+- Five read-only commands, each with `--json`: `inspect KEY`, `stuck`, `reconcile-spend [--days N]`, `health`, `ops events`. `stuck` and `reconcile-spend` exit 1 when they find something. They look for stale actions and reservations, wakes with no run row, uncounted serial parts, orphaned identities, expired leases, overdue agents, and ledger-versus-run disagreements in tokens and cost. They report and never repair.
+- Verified with tests against deliberately corrupted data and a clean database, a check that a real wake reconciles, and a check that the views change nothing; the commands also ran on the local Postgres, but that database is empty, so no real trouble has been seen. Suite: 241 passed (chaos run separately).
+- Still open in Phase 4: retention and pruning, backup and verified restore, key rotation, the operations runbook.
+
 Review this roadmap, then continue with the remaining Phase 1 items. Implement only when requested. Keep this document updated with decisions, evidence, completed milestones, and measured results.
