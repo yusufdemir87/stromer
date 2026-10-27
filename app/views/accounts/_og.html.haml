@@ -6,8 +6,15 @@
 = opengraph 'og:site_name', site_title
 = opengraph 'og:title', yield(:page_title).strip
 = opengraph 'og:description', description
-= opengraph 'og:image', full_asset_url(account.avatar.url(:original))
-= opengraph 'og:image:width', '400'
-= opengraph 'og:image:height', '400'
-= opengraph 'twitter:card', 'summary'
+- if share_card_for_profile?(account)
+  = opengraph 'og:image', share_card_account_url(account.id)
+  = opengraph 'og:image:type', 'image/png'
+  = opengraph 'og:image:width', '1200'
+  = opengraph 'og:image:height', '630'
+  = opengraph 'twitter:card', 'summary_large_image'
+- else
+  = opengraph 'og:image', full_asset_url(account.avatar.url(:original))
+  = opengraph 'og:image:width', '400'
+  = opengraph 'og:image:height', '400'
+  = opengraph 'twitter:card', 'summary'
 = opengraph 'profile:username', acct(account)[1..]

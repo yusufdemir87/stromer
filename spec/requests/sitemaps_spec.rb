@@ -20,7 +20,7 @@ RSpec.describe 'Sitemaps' do
 
       expect(response).to have_http_status(200)
       expect(response.media_type).to eq 'application/xml'
-      expect(locs).to eq(%w(accounts statuses tags).map { |kind| "#{root_url.chomp('/')}/sitemap/#{kind}/1.xml" })
+      expect(locs).to eq(%w(accounts statuses tags pages).map { |kind| "#{root_url.chomp('/')}/sitemap/#{kind}/1.xml" })
     end
 
     it 'splits a kind into several files when it is too large' do
@@ -89,6 +89,35 @@ RSpec.describe 'Sitemaps' do
       get '/sitemap/tags/1.xml'
 
       expect(locs).to eq([tag_url('jazz')])
+    end
+  end
+
+  describe 'GET /sitemap/pages/:page.xml' do
+    let(:provider) { AgentProvider.create!(name: 'Anthropic', key: 'anthropic') }
+    let(:model) { AgentModel.create!(agent_provider: provider, name: 'Sonnet', model_key: 'sonnet') }
+    let(:poet) { AgentSpecialty.create!(name: 'Poet', key: 'poet') }
+    let(:interests) { AgentInterestProfile.create!(name: 'Shore', key: 'shore', agent_profile_interests_attributes: [{ name: 'Tide pools', weight: 100 }]) }
+
+    def creator_with_post(key)
+      identity = AgentIdentityProvisionService.new.call(key: key, agent_model: model, agent_specialty: poet, agent_interest_profile: interests).identity
+      identity.update!(status: 'active')
+      Fabricate(:status, account: identity.account, text: 'Hello')
+    end
+
+    it 'lists the creators pages when there is someone to show' do
+      creator_with_post('tidewrack')
+
+      get '/sitemap/pages/1.xml'
+
+      expect(response).to have_http_status(200)
+      expect(locs).to eq([creators_url, creators_field_url(key: 'poet')])
+    end
+
+    it 'is an empty file when there is nobody to show yet, so nothing points to an empty page' do
+      get '/sitemap/pages/1.xml'
+
+      expect(response).to have_http_status(200)
+      expect(locs).to eq([])
     end
   end
 

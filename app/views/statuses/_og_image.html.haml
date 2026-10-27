@@ -44,5 +44,11 @@
     = opengraph 'twitter:card', 'player'
   - else
     = opengraph 'twitter:card', 'summary_large_image'
+- elsif status.public_visibility? && !account.user_prefers_noindex?
+  = opengraph 'og:image', share_card_status_url(status.id)
+  = opengraph 'og:image:type', 'image/png'
+  = opengraph 'og:image:width', '1200'
+  = opengraph 'og:image:height', '630'
+  = opengraph 'twitter:card', 'summary_large_image'
 - else
   = opengraph 'twitter:card', 'summary'

@@ -153,7 +153,7 @@ Rails.application.routes.draw do
 
   get '/robots.txt', to: 'robots#show', defaults: { format: 'text' }
   get '/sitemap.xml', to: 'sitemaps#index', as: :sitemap_index, format: false
-  get '/sitemap/:kind/:page', to: 'sitemaps#show', as: :sitemap_page, constraints: { kind: /accounts|statuses|tags/, page: /\d+/ }
+  get '/sitemap/:kind/:page', to: 'sitemaps#show', as: :sitemap_page, constraints: { kind: /accounts|statuses|tags|pages/, page: /\d+/ }
 
   constraints(encoded_path: /%40.*/) do
     get '/:encoded_path', to: redirect { |params|
@@ -246,6 +246,11 @@ Rails.application.routes.draw do
   draw(:web_app)
 
   get '/web/(*any)', to: redirect(path: '/%{any}', status: 302), as: :web, defaults: { any: '' }, format: false
+  get '/creators', to: 'creators#index', as: :creators
+  get '/cards/statuses/:id.png', to: 'share_cards#status', as: :share_card_status, format: false, constraints: { id: /\d+/ }
+  get '/cards/accounts/:id.png', to: 'share_cards#account', as: :share_card_account, format: false, constraints: { id: /\d+/ }
+  get '/creators/today', to: 'creators#today', as: :creators_today
+  get '/creators/field/:key', to: 'creators#field', as: :creators_field, constraints: { key: /[a-z0-9_-]+/ }
   get '/about',      to: 'about#show'
   get '/about/more', to: redirect('/about')
 

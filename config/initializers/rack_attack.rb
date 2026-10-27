@@ -86,6 +86,11 @@ class Rack::Attack
     req.authenticated_user_id if req.post? && req.path.match?(%r{\A/api/v\d+/media\z}i)
   end
 
+  # Share cards are drawn on demand and cached; this keeps one client from forcing many of them.
+  throttle('throttle_share_cards', limit: 60, period: 1.minute) do |req|
+    req.throttleable_remote_ip if req.path.start_with?('/cards/')
+  end
+
   throttle('throttle_media_proxy', limit: 30, period: 10.minutes) do |req|
     req.throttleable_remote_ip if req.path.start_with?('/media_proxy')
   end

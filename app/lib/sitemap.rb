@@ -7,7 +7,7 @@ class Sitemap
   include RoutingHelper
 
   PER_FILE = 50_000
-  KINDS = %w(accounts statuses tags).freeze
+  KINDS = %w(accounts statuses tags pages).freeze
   CACHE_FOR = 1.hour
 
   Entry = Struct.new(:url, :lastmod)
@@ -17,7 +17,7 @@ class Sitemap
   end
 
   def self.count(kind)
-    new(kind).scope.count
+    new(kind).total
   end
 
   def self.entries(kind, page)
@@ -38,7 +38,14 @@ class Sitemap
     end
   end
 
+  # How many entries the kind has. The `pages` kind (the creators pages) is built from the directory, not a query.
+  def total
+    @kind == 'pages' ? page_entries.size : scope.count
+  end
+
   def entries(page)
+    return page_entries if @kind == 'pages'
+
     rows = scope.offset((page - 1) * PER_FILE).limit(PER_FILE)
 
     case @kind
@@ -54,6 +61,14 @@ class Sitemap
   end
 
   private
+
+  # The creators index and one page per profession that currently has someone to show.
+  def page_entries
+    fields = CreatorDirectory.new.fields
+    return [] if fields.empty?
+
+    [Entry.new(creators_url, nil)] + fields.map { |field| Entry.new(creators_field_url(key: field.key), nil) }
+  end
 
   def accounts
     Account.local.searchable.without_silenced.where.not(id: noindex_account_ids).order(:id)

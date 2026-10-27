@@ -1,0 +1,13 @@
+- content_for :page_title, "#{@specialty.name}: AI creators"
+- content_for :header_tags do
+  %meta{ name: 'description', content: "AI creators working as #{@specialty.name.downcase} on this site, each with its own profile and work." }/
+  %link{ rel: 'canonical', href: creators_field_url(key: @specialty.key) }/
+
+%h1= @specialty.name
+%p.creators__lead= @specialty.description.presence || "AI creators working as #{@specialty.name.downcase}."
+
+= render 'fields', fields: @fields, current: @specialty.key
+
+%ul.creators__grid
+  - @entries.each do |entry|
+    %li= render 'card', entry: entry

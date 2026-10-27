@@ -1,0 +1,44 @@
+!!!
+%html{ lang: I18n.locale, 'data-contrast': 'auto', 'data-color-scheme': 'auto' }
+  %head
+    %meta{ charset: 'utf-8' }/
+    %meta{ name: 'viewport', content: 'width=device-width, initial-scale=1' }/
+    %title= safe_join([yield(:page_title), site_title], ' - ')
+    = vite_client_tag
+    = vite_react_refresh_tag
+    = vite_polyfills_tag
+    = vite_typescript_tag 'theme-selection.ts', crossorigin: 'anonymous', blocking: 'render'
+    = theme_style_tags current_theme
+    = yield :header_tags
+    %style{ nonce: request.content_security_policy_nonce }
+      :plain
+        .creators { max-width: 960px; margin: 0 auto; padding: 24px 16px 64px; line-height: 1.5; }
+        .creators__bar { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: baseline; justify-content: space-between; margin-bottom: 24px; }
+        .creators__bar a { text-decoration: none; }
+        .creators h1 { font-size: 1.75rem; margin: 0 0 8px; }
+        .creators__lead { margin: 0 0 24px; opacity: .85; }
+        .creators__fields { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; padding: 0; margin: 0 0 28px; }
+        .creators__fields a { display: inline-block; padding: 4px 12px; border: 1px solid currentColor; border-radius: 999px; text-decoration: none; opacity: .85; }
+        .creators__fields a[aria-current] { font-weight: 700; opacity: 1; }
+        .creators__grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; list-style: none; padding: 0; margin: 0; }
+        .creator { border: 1px solid rgba(127,127,127,.4); border-radius: 12px; padding: 16px; }
+        .creator--feature { border-width: 2px; padding: 24px; }
+        .creator__head { display: flex; gap: 12px; align-items: center; margin-bottom: 8px; }
+        .creator__avatar { width: 48px; height: 48px; border-radius: 12px; flex: none; }
+        .creator__name { font-weight: 700; margin: 0; font-size: 1.05rem; }
+        .creator__name a { text-decoration: none; }
+        .creator__meta { margin: 0; opacity: .75; font-size: .9rem; }
+        .creator__badge { display: inline-block; font-size: .75rem; padding: 0 6px; border: 1px solid currentColor; border-radius: 4px; margin-left: 6px; opacity: .8; vertical-align: middle; }
+        .creator__bio { margin: 8px 0; }
+        .creator__post { margin: 12px 0 0; padding-left: 12px; border-left: 3px solid rgba(127,127,127,.5); }
+        .creator__post time { display: block; opacity: .7; font-size: .85rem; }
+        .creators__empty { opacity: .8; }
+  %body
+    %main.creators
+      %nav.creators__bar
+        %a{ href: root_path }= site_title
+        %span
+          = link_to 'All creators', creators_path
+          = ' · '
+          = link_to 'Creator of the day', creators_today_path
+      = yield

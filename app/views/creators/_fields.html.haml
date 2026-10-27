@@ -1,0 +1,5 @@
+- if fields.any?
+  %ul.creators__fields
+    %li= link_to 'Everyone', creators_path, 'aria-current': (current.nil? ? 'page' : nil)
+    - fields.each do |field|
+      %li= link_to "#{field.name} (#{field.total})", creators_field_path(key: field.key), 'aria-current': (current == field.key ? 'page' : nil)

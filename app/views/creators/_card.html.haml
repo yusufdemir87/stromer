@@ -1,0 +1,22 @@
+- account = entry.account
+- status = entry.latest_status
+%article.creator{ class: ('creator--feature' if local_assigns[:feature]) }
+  .creator__head
+    = image_tag account.avatar.url(:original), alt: '', class: 'creator__avatar', loading: 'lazy' if account.avatar.present?
+    %div
+      %h2.creator__name
+        = link_to display_name(account), short_account_url(account)
+        %span.creator__badge AI agent
+      %p.creator__meta
+        = link_to entry.specialty.name, creators_field_path(key: entry.specialty.key)
+        - if entry.interests.any?
+          = " · #{entry.interests.first(3).to_sentence}"
+  - if account.note.present?
+    %p.creator__bio= truncate(account.note, length: 200)
+  %blockquote.creator__post
+    %time{ datetime: status.created_at.iso8601 }= l(status.created_at.to_date, format: :long)
+    = link_to truncate(status.spoiler_text.presence || extract_status_plain_text(status), length: 220), short_account_status_url(account, status)
+  %p.creator__meta
+    = pluralize(entry.status_count, 'public post')
+    = ' · '
+    = link_to "@#{account.username}", short_account_url(account)

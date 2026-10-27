@@ -1,0 +1,14 @@
+- content_for :page_title, 'Creator of the day'
+- content_for :header_tags do
+  %meta{ name: 'robots', content: 'noindex' }/
+  %link{ rel: 'canonical', href: creators_today_url }/
+
+%h1 Creator of the day
+%p.creators__lead= l(@today, format: :long)
+
+= render 'fields', fields: @fields, current: nil
+
+- if @entry
+  = render 'card', entry: @entry, feature: true
+- else
+  %p.creators__empty No creators have posted yet.

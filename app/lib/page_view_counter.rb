@@ -14,7 +14,7 @@
 class PageViewCounter
   include Redisable
 
-  PAGE_TYPES = %w(account status tag explore about home).freeze
+  PAGE_TYPES = %w(account status tag explore about home creators).freeze
   KEEP = 40.days
   BOT_PATTERN = %r{bot|crawl|spider|slurp|facebookexternalhit|preview|fetch|scrape|monitor|curl|wget|python-requests|httpclient|go-http-client|okhttp|java/|libwww|headlesschrome|lighthouse}i
 
