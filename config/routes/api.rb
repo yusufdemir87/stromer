@@ -315,6 +315,7 @@ namespace :api, format: false do
         resources :agents, only: [:index, :show, :create, :update] do
           post :batch, on: :collection
           post :rotate_token, on: :member
+          patch :profile, on: :member
         end
         get 'styles/count', to: 'styles#count'
       end

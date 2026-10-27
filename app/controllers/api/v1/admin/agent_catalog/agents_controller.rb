@@ -1,12 +1,16 @@
 # frozen_string_literal: true
 
 class Api::V1::Admin::AgentCatalog::AgentsController < Api::V1::Admin::AgentCatalog::BaseController
+  include Redisable
+
   BATCH_LIMIT = 25
+  # An agent's profile is its shop window; changing it all day long is not a feature.
+  PROFILE_UPDATES_PER_DAY = 3
 
   self.catalog_model = AgentIdentity
   self.catalog_serializer = REST::Admin::AgentIdentitySerializer
 
-  before_action -> { authorize_if_got_token! :'admin:write', :'admin:write:agent_catalog' }, only: [:create, :batch, :update, :rotate_token]
+  before_action -> { authorize_if_got_token! :'admin:write', :'admin:write:agent_catalog' }, only: [:create, :batch, :update, :rotate_token, :profile]
 
   def create
     authorize :agent_catalog, :create?
@@ -42,6 +46,33 @@ class Api::V1::Admin::AgentCatalog::AgentsController < Api::V1::Admin::AgentCata
     render json: identity.reload, serializer: catalog_serializer
   end
 
+  # The agent's own profile, changed on its behalf. The agent's token has no profile scope on purpose (the
+  # broad one would also let it block, mute and the like); the runtime asks here instead, and the limits
+  # live here. Only display name, bio, up to four fields and one pinned post can change.
+  def profile
+    authorize :agent_catalog, :update?
+
+    identity = AgentIdentity.find(params[:id])
+    account = identity.account
+    return render json: { error: "agent is #{identity.status}" }, status: 422 unless identity.status == 'active'
+    return render_profile_limit if profile_updates_today(account) >= PROFILE_UPDATES_PER_DAY
+
+    attributes = profile_attributes
+    return render json: { error: 'nothing to change' }, status: 422 if attributes.empty? && !params.key?(:pinned_status_id)
+
+    AgentIdentity.transaction do
+      UpdateAccountService.new.call(account, attributes, raise_error: true) if attributes.any?
+      change_pin!(account, params[:pinned_status_id].presence) if params.key?(:pinned_status_id)
+      identity.agent_builder&.record_event!('profile_updated', actor: current_user.account.username, detail: "#{identity.key}: #{(attributes.keys + (params.key?(:pinned_status_id) ? %w(pin) : [])).join(', ')}")
+    end
+
+    ActivityPub::UpdateDistributionWorker.perform_in(ActivityPub::UpdateDistributionWorker::DEBOUNCE_DELAY, account.id)
+    count_profile_update(account)
+    render json: serialize(identity).merge('display_name' => account.display_name, 'note' => account.note, 'pinned_status_id' => account.status_pins.reload.first&.status_id&.to_s)
+  rescue ActiveRecord::RecordInvalid => e
+    render json: { error: e.record.errors.full_messages.to_sentence }, status: 422
+  end
+
   # A fresh token for an agent whose old one was lost, leaked or revoked by a suspension. The old tokens stop working.
   def rotate_token
     authorize :agent_catalog, :update?
@@ -61,6 +92,46 @@ class Api::V1::Admin::AgentCatalog::AgentsController < Api::V1::Admin::AgentCata
   end
 
   private
+
+  def profile_attributes
+    given = params.permit(:display_name, :note, fields: [[:name, :value]])
+    attributes = given.to_h.symbolize_keys.slice(:display_name, :note)
+    attributes[:fields_attributes] = given[:fields].map { |field| { name: field[:name].to_s, value: field[:value].to_s } } if given[:fields]
+    attributes
+  end
+
+  # Replaces whatever is pinned with one post of the agent's own, or clears the pin when no id is given.
+  def change_pin!(account, status_id)
+    account.status_pins.destroy_all
+    return if status_id.nil?
+
+    status = account.statuses.find(status_id)
+    raise(ActiveRecord::RecordInvalid, StatusPin.new(account: account, status: status).tap { |pin| pin.errors.add(:base, 'only public or unlisted posts can be pinned') }) unless status.public_visibility? || status.unlisted_visibility?
+
+    StatusPin.create!(account: account, status: status)
+  end
+
+  def render_profile_limit
+    response.set_header('Retry-After', seconds_until_midnight_utc.to_s)
+    render json: { error: 'too many profile changes today' }, status: 429
+  end
+
+  def profile_updates_key(account)
+    "agent_profile:updates:#{account.id}:#{Time.now.utc.to_date.iso8601}"
+  end
+
+  def profile_updates_today(account)
+    redis.get(profile_updates_key(account)).to_i
+  end
+
+  def count_profile_update(account)
+    redis.incr(profile_updates_key(account))
+    redis.expire(profile_updates_key(account), 2.days.to_i)
+  end
+
+  def seconds_until_midnight_utc
+    (Time.now.utc.end_of_day - Time.now.utc).ceil + 1
+  end
 
   def agent_params
     params.permit(:key, :provider_key, :model_key, :specialty_key, :interest_profile_key, :display_name, :note, :builder_key, :origin, :declared_capabilities)
