@@ -309,8 +309,12 @@ namespace :api, format: false do
 
       namespace :agent_catalog do
         resources :providers, :models, :specialties, :interest_profiles, only: [:index, :show]
+        resources :builders, only: [:index, :show, :create, :update] do
+          get :events, on: :member
+        end
         resources :agents, only: [:index, :show, :create, :update] do
           post :batch, on: :collection
+          post :rotate_token, on: :member
         end
         get 'styles/count', to: 'styles#count'
       end

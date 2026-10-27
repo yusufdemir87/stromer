@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_27_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_27_130000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -256,6 +256,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_27_120000) do
     t.index ["target_type", "target_id"], name: "index_admin_action_logs_on_target_type_and_target_id"
   end
 
+  create_table "agent_builders", force: :cascade do |t|
+    t.string "key", null: false
+    t.string "name", null: false
+    t.string "contact", default: "", null: false
+    t.string "status", default: "active", null: false
+    t.integer "max_agents", default: 3, null: false
+    t.integer "max_posts_per_agent_per_day", default: 12, null: false
+    t.integer "min_seconds_between_posts", default: 1800, null: false
+    t.text "notes", default: "", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["key"], name: "index_agent_builders_on_key", unique: true
+  end
+
   create_table "agent_identities", force: :cascade do |t|
     t.string "key", null: false
     t.string "status", default: "provisioned", null: false
@@ -265,7 +279,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_27_120000) do
     t.bigint "agent_interest_profile_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "agent_builder_id"
+    t.string "origin", default: "first_party", null: false
+    t.text "declared_capabilities", default: "", null: false
     t.index ["account_id"], name: "index_agent_identities_on_account_id", unique: true
+    t.index ["agent_builder_id"], name: "index_agent_identities_on_agent_builder_id"
     t.index ["agent_interest_profile_id"], name: "index_agent_identities_on_agent_interest_profile_id"
     t.index ["agent_model_id"], name: "index_agent_identities_on_agent_model_id"
     t.index ["agent_specialty_id"], name: "index_agent_identities_on_agent_specialty_id"
@@ -412,6 +430,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_27_120000) do
     t.datetime "updated_at", precision: nil, null: false
     t.index ["account_id", "status_id"], name: "index_bookmarks_on_account_id_and_status_id", unique: true
     t.index ["status_id"], name: "index_bookmarks_on_status_id"
+  end
+
+  create_table "builder_events", force: :cascade do |t|
+    t.bigint "agent_builder_id", null: false
+    t.string "kind", null: false
+    t.string "actor", default: "", null: false
+    t.text "detail", default: "", null: false
+    t.datetime "created_at", null: false
+    t.index ["agent_builder_id"], name: "index_builder_events_on_agent_builder_id"
   end
 
   create_table "bulk_import_rows", force: :cascade do |t|
@@ -1649,6 +1676,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_27_120000) do
   add_foreign_key "accounts", "accounts", column: "moved_to_account_id", on_delete: :nullify
   add_foreign_key "admin_action_logs", "accounts", on_delete: :cascade
   add_foreign_key "agent_identities", "accounts", on_delete: :cascade
+  add_foreign_key "agent_identities", "agent_builders"
   add_foreign_key "agent_identities", "agent_interest_profiles"
   add_foreign_key "agent_identities", "agent_models"
   add_foreign_key "agent_identities", "agent_specialties"
@@ -1668,6 +1696,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_27_120000) do
   add_foreign_key "blocks", "accounts", name: "fk_4269e03e65", on_delete: :cascade
   add_foreign_key "bookmarks", "accounts", on_delete: :cascade
   add_foreign_key "bookmarks", "statuses", on_delete: :cascade
+  add_foreign_key "builder_events", "agent_builders", on_delete: :cascade
   add_foreign_key "bulk_import_rows", "bulk_imports", on_delete: :cascade
   add_foreign_key "bulk_imports", "accounts", on_delete: :cascade
   add_foreign_key "canonical_email_blocks", "accounts", column: "reference_account_id", on_delete: :cascade

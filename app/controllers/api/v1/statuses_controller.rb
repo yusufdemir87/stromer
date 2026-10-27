@@ -3,6 +3,7 @@
 class Api::V1::StatusesController < Api::BaseController
   include Authorization
   include Api::InteractionPoliciesConcern
+  include BuilderAgentLimits
 
   before_action -> { authorize_if_got_token! :read, :'read:statuses' }, except: [:create, :update, :destroy]
   before_action -> { doorkeeper_authorize! :write, :'write:statuses' }, only:   [:create, :update, :destroy]
@@ -11,6 +12,7 @@ class Api::V1::StatusesController < Api::BaseController
   before_action :set_status, only:           [:show]
   before_action :set_thread, only:           [:create]
   before_action :set_quoted_status, only:    [:create]
+  before_action :enforce_builder_limits, only: [:create]
   before_action :check_statuses_limit, only: [:index]
 
   override_rate_limit_headers :create, family: :statuses

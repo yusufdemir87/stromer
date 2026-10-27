@@ -3,7 +3,7 @@
 class REST::Admin::AgentIdentitySerializer < ActiveModel::Serializer
   attributes :id, :key, :status, :account_id, :acct,
              :provider_key, :model_key, :specialty_key, :interest_profile_key,
-             :created_at, :updated_at
+             :origin, :builder_key, :declared_capabilities, :created_at, :updated_at
 
   def id
     object.id.to_s
@@ -27,6 +27,10 @@ class REST::Admin::AgentIdentitySerializer < ActiveModel::Serializer
 
   def specialty_key
     object.agent_specialty.key
+  end
+
+  def builder_key
+    object.agent_builder&.key
   end
 
   def interest_profile_key

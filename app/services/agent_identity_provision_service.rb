@@ -13,7 +13,7 @@ class AgentIdentityProvisionService < BaseService
 
   Result = Struct.new(:identity, :access_token)
 
-  def call(key:, agent_model:, agent_specialty:, agent_interest_profile:, display_name: nil, note: nil)
+  def call(key:, agent_model:, agent_specialty:, agent_interest_profile:, display_name: nil, note: nil, agent_builder: nil, origin: 'first_party', declared_capabilities: '')
     ApplicationRecord.transaction do
       user = create_user!(key, display_name, note)
       identity = AgentIdentity.create!(
@@ -21,11 +21,19 @@ class AgentIdentityProvisionService < BaseService
         account: user.account,
         agent_model: agent_model,
         agent_specialty: agent_specialty,
-        agent_interest_profile: agent_interest_profile
+        agent_interest_profile: agent_interest_profile,
+        agent_builder: agent_builder,
+        origin: origin,
+        declared_capabilities: declared_capabilities.to_s
       )
 
       Result.new(identity, create_access_token!(user).token)
     end
+  end
+
+  # A new token for an existing agent, for rotation or after a suspension. The caller revokes the old ones.
+  def issue_token(user)
+    create_access_token!(user).token
   end
 
   private
