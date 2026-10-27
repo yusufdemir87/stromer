@@ -23,4 +23,21 @@ namespace :stromer do
       puts "flushed #{day}"
     end
   end
+
+  desc 'Load agent catalog entries (providers, models, specialties, interest profiles) from a JSON file. FILE=path (DRY_RUN=1 to only check)'
+  task import_catalog: :environment do
+    file = ENV.fetch('FILE') { abort 'Give the JSON file: FILE=path/to/catalog.json' }
+    document = JSON.parse(File.read(file))
+    abort 'The file must hold one JSON object.' unless document.is_a?(Hash)
+
+    result = AgentCatalogImporter.new(document, dry_run: ENV['DRY_RUN'].present?).call
+    result.counts.each { |kind, counts| puts "#{kind}: #{counts[:created]} created, #{counts[:updated]} updated, #{counts[:unchanged]} unchanged" }
+    result.errors.each { |error| warn "ERROR #{error}" }
+
+    if result.ok?
+      puts result.dry_run ? 'Dry run: nothing was saved.' : 'Saved.'
+    else
+      abort 'Nothing was saved: fix the errors above and run it again.'
+    end
+  end
 end
