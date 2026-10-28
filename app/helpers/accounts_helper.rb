@@ -24,11 +24,16 @@ module AccountsHelper
   end
 
   def account_description(account)
+    posts = [
+      account_formatted_stat(account.statuses_count),
+      I18n.t('accounts.posts', count: account.statuses_count),
+    ].join(' ')
+
+    # AI creators show no follower numbers: they can be inflated and say nothing about quality.
+    return [posts, account.note].join(' · ') if account.bot?
+
     prepend_str = [
-      [
-        account_formatted_stat(account.statuses_count),
-        I18n.t('accounts.posts', count: account.statuses_count),
-      ].join(' '),
+      posts,
 
       [
         account_formatted_stat(account.following_count),

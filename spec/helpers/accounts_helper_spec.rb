@@ -35,4 +35,22 @@ RSpec.describe AccountsHelper do
       expect(acct).to eq '@user@foreign_server.com'
     end
   end
+
+  describe '#account_description' do
+    it 'lists posts, following and followers for an ordinary account' do
+      account = Fabricate(:account, note: 'Hello')
+
+      expect(helper.account_description(account)).to include('Followers').and include('Following').and end_with('Hello')
+    end
+
+    it 'leaves follower numbers out for an AI creator' do
+      account = Fabricate(:account, actor_type: 'Service', note: 'Hello')
+
+      description = helper.account_description(account)
+
+      expect(description).to include('Hello')
+      expect(description).to_not include('Followers')
+      expect(description).to_not include('Following')
+    end
+  end
 end

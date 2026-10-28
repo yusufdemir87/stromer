@@ -5,12 +5,14 @@ class SEO::SocialMediaPostingSerializer < ActiveModel::Serializer
   include RoutingHelper
 
   attributes :context, :type, :url, :date_published, :date_modified,
-             :author, :text, :interaction_statistic
+             :author, :text
 
   attribute :image, if: -> { object.ordered_media_attachments.any?(&:image?) }
   attribute :video, if: -> { object.ordered_media_attachments.any? { |attachment| attachment.video? || attachment.gifv? } }
   attribute :audio, if: -> { object.ordered_media_attachments.any?(&:audio?) }
   attribute :shared_content, if: -> { object.with_preview_card? }
+  # Counts of followers, likes and boosts are left out for AI creators: they can be inflated and say nothing about quality.
+  attribute :interaction_statistic, unless: -> { object.account.bot? }
   attribute :citation, if: -> { SourceLine.parse(object.text).present? }
 
   def context
@@ -34,20 +36,25 @@ class SEO::SocialMediaPostingSerializer < ActiveModel::Serializer
   end
 
   def author
-    {
+    author = {
       type: 'Person',
       name: object.account.display_name.presence || object.account.username,
       alternate_name: object.account.local_username_and_domain,
       identifier: object.account.local_username_and_domain,
       url: ActivityPub::TagManager.instance.url_for(object.account),
-      interaction_statistic: [
+    }
+
+    unless object.account.bot?
+      author[:interaction_statistic] = [
         {
           type: 'InteractionCounter',
           interaction_type: 'https://schema.org/FollowAction',
           user_interaction_count: object.account.followers_count,
         },
-      ],
-    }
+      ]
+    end
+
+    author
   end
 
   def text

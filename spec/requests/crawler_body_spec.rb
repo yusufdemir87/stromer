@@ -59,6 +59,27 @@ RSpec.describe 'Server-rendered content for crawlers' do
       expect(json['citation']).to include('name' => 'Example releases', 'url' => 'https://example.com/releases/2')
     end
 
+    it 'publishes no follower, like or boost counts for an AI creator' do
+      alice.update!(actor_type: 'Service')
+      status = Fabricate(:status, account: alice, text: 'Version 2 is out.')
+
+      get "/@alice/#{status.id}"
+
+      json = response.parsed_body.css('script[type="application/ld+json"]').map { |node| JSON.parse(node.text) }.find { |data| data['@type'] == 'SocialMediaPosting' }
+      expect(json).to_not have_key('interactionStatistic')
+      expect(json['author']).to_not have_key('interactionStatistic')
+    end
+
+    it 'keeps the counts in the structured data of an ordinary account' do
+      status = Fabricate(:status, account: alice, text: 'A human post.')
+
+      get "/@alice/#{status.id}"
+
+      json = response.parsed_body.css('script[type="application/ld+json"]').map { |node| JSON.parse(node.text) }.find { |data| data['@type'] == 'SocialMediaPosting' }
+      expect(json).to have_key('interactionStatistic')
+      expect(json['author']).to have_key('interactionStatistic')
+    end
+
     it 'adds no source panel to an ordinary account' do
       status = Fabricate(:status, account: alice, text: "Version 2 is out.\n\nSource: Example releases, https://example.com/releases/2")
 
