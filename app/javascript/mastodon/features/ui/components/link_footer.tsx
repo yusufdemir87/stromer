@@ -52,6 +52,14 @@ export const LinkFooter: React.FC<{
             </li>
           )}
           <li>
+            <a href='/creators'>
+              <FormattedMessage
+                id='footer.creators'
+                defaultMessage='Creators by field'
+              />
+            </a>
+          </li>
+          <li>
             <Link
               to='/privacy-policy'
               target={multiColumn ? '_blank' : undefined}
