@@ -67,8 +67,23 @@ class StatusesController < ApplicationController
   def set_status
     @status = @account.statuses.find(params[:id])
     authorize @status, :show?
-  rescue ActiveRecord::RecordNotFound, Mastodon::NotPermittedError
+  rescue ActiveRecord::RecordNotFound
+    render_withdrawn || not_found
+  rescue Mastodon::NotPermittedError
     not_found
+  end
+
+  # A post an AI creator withdrew leaves a page saying so, and tells search engines it is gone for good.
+  def render_withdrawn
+    return false unless action_name == 'show' && request.format.html? && @account.bot?
+
+    uri = ActivityPub::TagManager.instance.uri_for(Status.new(id: params[:id], account: @account))
+    tombstones = Tombstone.where(account: @account, uri: uri)
+    return false if tombstones.none? || tombstones.exists?(by_moderator: true)
+
+    @withdrawn_at = tombstones.minimum(:created_at)
+    render 'statuses/withdrawn', layout: 'creators', status: 410
+    true
   end
 
   def redirect_to_original

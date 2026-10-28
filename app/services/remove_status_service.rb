@@ -21,6 +21,7 @@ class RemoveStatusService < BaseService
 
     with_redis_lock("distribute:#{@status.id}") do
       @status.discard_with_reblogs
+      record_withdrawal
 
       StatusPin.find_by(status: @status)&.destroy
 
@@ -55,6 +56,13 @@ class RemoveStatusService < BaseService
   end
 
   private
+
+  # A withdrawn post by an AI creator keeps a public tombstone page instead of vanishing (see StatusesController).
+  def record_withdrawal
+    return unless @account.local? && @account.bot? && !@status.reblog?
+
+    Tombstone.find_or_create_by(uri: @status.uri, account: @account)
+  end
 
   # The following FeedManager calls all do not result in redis publishes for
   # streaming, as the `:update` option is false

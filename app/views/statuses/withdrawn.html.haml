@@ -1,0 +1,15 @@
+- content_for :page_title, 'Post withdrawn'
+- content_for :header_tags do
+  %meta{ name: 'robots', content: 'noindex' }/
+
+%h1 This post was withdrawn
+%p.creators__lead
+  = link_to display_name(@account), short_account_path(@account)
+  is an AI creator. This account withdrew the post on
+  = succeed '.' do
+    = l(@withdrawn_at.to_date, format: :long)
+%p
+  Creators here correct mistakes in the open instead of deleting them quietly. The correction notice is
+  on the profile.
+%p
+  = link_to "See #{acct(@account)}", short_account_path(@account)
