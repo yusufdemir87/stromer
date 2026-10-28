@@ -18,19 +18,36 @@ class PageViewCounter
   KEEP = 40.days
   BOT_PATTERN = %r{bot|crawl|spider|slurp|facebookexternalhit|preview|fetch|scrape|monitor|curl|wget|python-requests|httpclient|go-http-client|okhttp|java/|libwww|headlesschrome|lighthouse}i
 
+  SEARCH_HOSTS = /(\A|\.)(google|bing|duckduckgo|yahoo|yandex|baidu|ecosia|brave|kagi|startpage|qwant|naver|seznam)\./i
+  SOCIAL_HOSTS = /(\A|\.)(facebook|fb|instagram|twitter|x|t|reddit|linkedin|bsky|threads|youtube|youtu|pinterest|tumblr|hacker-news\.firebaseio|news\.ycombinator)\./i
+
+  # Only the kind of source is kept (never the address): search, social, another site, or none (direct).
+  def self.referral_source(referer, own_host = nil)
+    return 'direct' if referer.blank?
+
+    host = URI.parse(referer.to_s).host.to_s.downcase
+    return 'direct' if host.blank? || (own_host.present? && host == own_host.to_s.downcase)
+    return 'search' if SEARCH_HOSTS.match?(host)
+    return 'social' if SOCIAL_HOSTS.match?(host)
+
+    'other'
+  rescue URI::InvalidURIError
+    'other'
+  end
+
   def self.bot?(user_agent)
     user_agent.blank? || BOT_PATTERN.match?(user_agent)
   end
 
-  def self.record(page_type:, ip:, user_agent:, now: Time.now.utc)
-    new.record(page_type: page_type, ip: ip, user_agent: user_agent, now: now)
+  def self.record(page_type:, ip:, user_agent:, now: Time.now.utc, referer: nil, host: nil)
+    new.record(page_type: page_type, ip: ip, user_agent: user_agent, now: now, referer: referer, host: host)
   end
 
   def self.flush(day)
     new.flush(day)
   end
 
-  def record(page_type:, ip:, user_agent:, now: Time.now.utc)
+  def record(page_type:, ip:, user_agent:, now: Time.now.utc, referer: nil, host: nil)
     return unless PAGE_TYPES.include?(page_type)
 
     audience = self.class.bot?(user_agent) ? 'bot' : 'human'
@@ -40,6 +57,7 @@ class PageViewCounter
 
     redis.pipelined do |pipeline|
       pipeline.hincrby(views_key, "#{page_type}:#{audience}", 1)
+      pipeline.hincrby(views_key, "#{PageViewStat::REFERRAL_PREFIX}#{self.class.referral_source(referer, host)}:#{audience}", 1)
       pipeline.expire(views_key, KEEP.to_i)
       pipeline.pfadd(visitors_key, visitor_hash(ip, user_agent, day))
       pipeline.expire(visitors_key, KEEP.to_i)
@@ -55,10 +73,12 @@ class PageViewCounter
     end
 
     PageViewStat::AUDIENCES.each do |audience|
-      views = PageViewStat.where(day: day, audience: audience).where.not(page_type: PageViewStat::ALL).sum(:views)
+      views = PageViewStat.where(day: day, audience: audience).pages.sum(:views)
       uniques = redis.pfcount(visitors_key(day, audience))
       save(day, PageViewStat::ALL, audience, views: views, uniques: uniques, returning: returning(day, audience, uniques))
     end
+
+    PageViewStat.where(day: ...(day - PageViewStat::RETENTION)).delete_all
   end
 
   private

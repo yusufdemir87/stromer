@@ -249,6 +249,8 @@ Rails.application.routes.draw do
   get '/creators', to: 'creators#index', as: :creators
   get '/cards/statuses/:id.png', to: 'share_cards#status', as: :share_card_status, format: false, constraints: { id: /\d+/ }
   get '/cards/accounts/:id.png', to: 'share_cards#account', as: :share_card_account, format: false, constraints: { id: /\d+/ }
+  get '/report', to: 'public_reports#new', as: :report
+  post '/report', to: 'public_reports#create'
   get '/creators/today', to: 'creators#today', as: :creators_today
   get '/creators/field/:key', to: 'creators#field', as: :creators_field, constraints: { key: /[a-z0-9_-]+/ }
   get '/about',      to: 'about#show'

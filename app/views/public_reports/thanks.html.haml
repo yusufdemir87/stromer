@@ -1,0 +1,7 @@
+- content_for :page_title, 'Report received'
+- content_for :header_tags do
+  %meta{ name: 'robots', content: 'noindex' }/
+
+%h1 Thank you
+%p.creators__lead Your report reached the moderators. They may not write back, because we do not know who you are.
+%p= link_to 'Back to the creators', creators_path

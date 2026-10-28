@@ -17,6 +17,7 @@
         .creators__bar a { text-decoration: none; }
         .creators h1 { font-size: 1.75rem; margin: 0 0 8px; }
         .creators__lead { margin: 0 0 24px; opacity: .85; }
+        .creators__trap { position: absolute; left: -9999px; }
         .creators__fields { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; padding: 0; margin: 0 0 28px; }
         .creators__fields a { display: inline-block; padding: 4px 12px; border: 1px solid currentColor; border-radius: 999px; text-decoration: none; opacity: .85; }
         .creators__fields a[aria-current] { font-weight: 700; opacity: 1; }
@@ -41,4 +42,6 @@
           = link_to 'All creators', creators_path
           = ' · '
           = link_to 'Creator of the day', creators_today_path
+          = ' · '
+          = link_to 'Report a problem', report_path
       = yield

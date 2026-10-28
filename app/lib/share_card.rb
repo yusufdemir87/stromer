@@ -36,12 +36,31 @@ class ShareCard
     image.write_to_buffer('.png', strip: true)
   end
 
+  # The two colours of a seed's gradient (top and bottom); the same seed always gives the same pair.
+  def self.palette(seed)
+    hue = Zlib.crc32(seed.to_s) % 360
+    [hsl_to_rgb(hue, 0.45, 0.28), hsl_to_rgb((hue + 40) % 360, 0.5, 0.16)]
+  end
+
+  def self.hsl_to_rgb(hue, saturation, lightness)
+    chroma = (1 - ((2 * lightness) - 1).abs) * saturation
+    x = chroma * (1 - (((hue / 60.0) % 2) - 1).abs)
+    m = lightness - (chroma / 2)
+    r, g, b = case hue
+              when 0...60 then [chroma, x, 0]
+              when 60...120 then [x, chroma, 0]
+              when 120...180 then [0, chroma, x]
+              when 180...240 then [0, x, chroma]
+              when 240...300 then [x, 0, chroma]
+              else [chroma, 0, x]
+              end
+    [r, g, b].map { |value| ((value + m) * 255).round }
+  end
+
   private
 
   def background
-    hue = Zlib.crc32(@seed) % 360
-    top = hsl_to_rgb(hue, 0.45, 0.28)
-    bottom = hsl_to_rgb((hue + 40) % 360, 0.5, 0.16)
+    top, bottom = self.class.palette(@seed)
     gradient = (Vips::Image.xyz(1, HEIGHT).extract_band(1) / (HEIGHT - 1.0)).resize(WIDTH.to_f, kernel: :nearest, vscale: 1.0)
     channels = top.zip(bottom).map { |from, to| (gradient * (to - from)) + from }
     channels.first.bandjoin(channels.drop(1)).cast(:uchar).copy(interpretation: :srgb)
@@ -65,20 +84,5 @@ class ShareCard
   def clean(text, limit)
     cleaned = text.to_s.gsub(/[[:cntrl:]\s]+/, ' ').strip
     cleaned.length > limit ? "#{cleaned[0, limit - 1]}…" : cleaned
-  end
-
-  def hsl_to_rgb(hue, saturation, lightness)
-    chroma = (1 - ((2 * lightness) - 1).abs) * saturation
-    x = chroma * (1 - (((hue / 60.0) % 2) - 1).abs)
-    m = lightness - (chroma / 2)
-    r, g, b = case hue
-              when 0...60 then [chroma, x, 0]
-              when 60...120 then [x, chroma, 0]
-              when 120...180 then [0, chroma, x]
-              when 180...240 then [0, x, chroma]
-              when 240...300 then [x, 0, chroma]
-              else [chroma, 0, x]
-              end
-    [r, g, b].map { |value| ((value + m) * 255).round }
   end
 end

@@ -19,9 +19,13 @@
 class PageViewStat < ApplicationRecord
   AUDIENCES = %w(human bot).freeze
   ALL = 'all'
+  # Rows named from_search, from_social, from_other, from_direct count where visits came from, not which page was seen.
+  REFERRAL_PREFIX = 'from_'
+  RETENTION = 400.days
 
   validates :day, :page_type, :audience, presence: true
   validates :audience, inclusion: { in: AUDIENCES }
 
+  scope :pages, -> { where.not(page_type: ALL).where.not('page_type LIKE ?', "#{REFERRAL_PREFIX}%") }
   scope :between, ->(since, until_day) { where(day: since..until_day) }
 end

@@ -1,0 +1,42 @@
+- content_for :page_title, 'Report a problem'
+- content_for :header_tags do
+  %meta{ name: 'robots', content: 'noindex' }/
+
+%h1 Report a problem
+%p.creators__lead Tell the people who run this site about a post or a creator that is wrong, harmful or does not belong. You do not need an account and nothing about you is kept.
+
+- if @problem
+  %p{ role: 'alert' }= @problem
+
+= form_with url: report_path, method: :post, local: true do
+  - if @target.is_a?(Status)
+    %p
+      About this post by
+      %strong= @target.account.display_name.presence || @target.account.username
+      \:
+      %q= truncate(@target.text.to_s, length: 200)
+    = hidden_field_tag :status_id, @target.id
+  - elsif @target
+    %p
+      About the creator
+      %strong= @target.display_name.presence || @target.username
+    = hidden_field_tag :username, @target.username
+  - else
+    %p
+      = label_tag :username do
+        Creator name or post number
+      = text_field_tag :username, params[:username], maxlength: 100
+  %p
+    = label_tag :category do
+      What kind of problem?
+    = select_tag :category, options_for_select([['Something else', 'other'], ['Spam', 'spam'], ['Illegal content', 'legal']], @category)
+  %p
+    = label_tag :comment do
+      What is wrong?
+    %br/
+    = text_area_tag :comment, @comment, rows: 5, cols: 60, maxlength: 1000, required: true
+  .creators__trap{ aria: { hidden: true } }
+    = label_tag :website do
+      Leave this empty
+    = text_field_tag :website, nil, tabindex: -1, autocomplete: 'off'
+  %p= submit_tag 'Send report'

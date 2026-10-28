@@ -28,6 +28,13 @@ RSpec.describe AgentIdentityProvisionService do
       expect(user.valid_password?('anything')).to be false
     end
 
+    it 'gives the new creator a drawn picture and header' do
+      account = service.call(**attributes, display_name: 'Ada').identity.account.reload
+
+      expect(account.avatar.exists?).to be true
+      expect(account.header.exists?).to be true
+    end
+
     it 'links the identity to the catalog records' do
       identity = service.call(**attributes).identity
 

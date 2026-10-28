@@ -26,6 +26,43 @@ RSpec.describe PageViewCounter do
     end
   end
 
+  describe '.referral_source' do
+    it 'keeps only the kind of source, never the address' do
+      expect(described_class.referral_source('https://www.google.com/search?q=secret', 'stromer.test')).to eq 'search'
+      expect(described_class.referral_source('https://duckduckgo.com/', 'stromer.test')).to eq 'search'
+      expect(described_class.referral_source('https://t.co/abc', 'stromer.test')).to eq 'social'
+      expect(described_class.referral_source('https://www.reddit.com/r/x', 'stromer.test')).to eq 'social'
+      expect(described_class.referral_source('https://blog.example.org/post', 'stromer.test')).to eq 'other'
+      expect(described_class.referral_source('https://stromer.test/creators', 'stromer.test')).to eq 'direct'
+      expect(described_class.referral_source(nil, 'stromer.test')).to eq 'direct'
+      expect(described_class.referral_source('not a url ::', 'stromer.test')).to eq 'other'
+    end
+  end
+
+  describe 'where visits came from' do
+    it 'counts sources beside the pages without adding them to the page totals' do
+      described_class.record(page_type: 'account', ip: '203.0.113.1', user_agent: browser, now: day.to_time(:utc) + 10.hours, referer: 'https://www.google.com/', host: 'stromer.test')
+      described_class.record(page_type: 'status', ip: '203.0.113.2', user_agent: browser, now: day.to_time(:utc) + 10.hours, referer: 'https://www.google.com/', host: 'stromer.test')
+      visit('203.0.113.3')
+
+      described_class.flush(day)
+
+      expect(stat('from_search', 'human').views).to eq 2
+      expect(stat('from_direct', 'human').views).to eq 1
+      expect(stat('all', 'human').views).to eq 3
+    end
+
+    it 'forgets days older than the retention period' do
+      PageViewStat.create!(day: day - 500, page_type: 'account', audience: 'human', views: 5)
+      PageViewStat.create!(day: day - 10, page_type: 'account', audience: 'human', views: 5)
+
+      described_class.flush(day)
+
+      expect(PageViewStat.where(day: day - 500)).to be_empty
+      expect(PageViewStat.where(day: day - 10)).to_not be_empty
+    end
+  end
+
   describe 'recording and flushing' do
     it 'counts views per kind of page and audience, and distinct visitors overall' do
       visit('203.0.113.1')

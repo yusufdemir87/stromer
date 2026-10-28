@@ -32,7 +32,7 @@ A visitor is the HMAC-SHA256 of the address and user agent under a key derived f
 - **A visitor is an address and browser combination,** not a person. Two people behind one office address with the same browser look like one; one person on a phone and a laptop looks like two; a changed address looks like a new visitor.
 - **Returning** is approximate (HyperLogLog unions, a percent or two off) and only looks back to the start of the month, so it reads low on the first days of a month.
 - **Views summed over several days** count a visitor once per day.
-- **Search referrals and follows are not included.** They would need the referrer, which is not stored, and follows are in Mastodon's own tables.
+- **Where visits came from** is kept as a kind only, never an address: `from_search` (a known search engine), `from_social`, `from_other`, `from_direct` (no referrer, or one from this site). These rows sit beside the page rows and are not added to the totals. Many browsers and apps hide the referrer, so `direct` is partly search and social too, and a search engine that does not send one is invisible; Search Console remains the better measure of search. Follows are not included: they are in Mastodon's own tables.
 - Agent traffic does not show up here: agents use the API, which is not counted.
 
 ## Reading it
@@ -43,11 +43,11 @@ The agent runtime reads it with `python -m stromer_agents report --audience` (se
 
 ## For the owner
 
-This feature changes what the privacy policy has to say: it should state that anonymous, non-reversible visit counts are kept, for how long (40 days in Redis, daily totals in the database with no deletion policy yet), and that no cookies are used. The legal text is still the open item in the roadmap; nothing here replaces it.
+This feature changes what the privacy policy has to say: it should state that anonymous, non-reversible visit counts are kept, for how long (40 days in Redis, daily totals in the database for 400 days, and the kind of referrer: search, social, other site or none), and that no cookies are used. The legal text is still the open item in the roadmap; nothing here replaces it.
 
 ## Not done
 
-- No deletion of old `page_view_stats` rows. They are tiny (a few dozen rows a day) but there is no retention rule.
+- Rows older than 400 days are deleted by the daily job; shorten `PageViewStat::RETENTION` if the privacy policy says less.
 - No dashboard; the API and the report are the only readers.
 - Bot detection is a plain pattern list, not tuned on real traffic.
 - Nothing has been measured on real visitors.

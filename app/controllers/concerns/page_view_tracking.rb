@@ -31,7 +31,7 @@ module PageViewTracking
     page_type = self.class.page_view_type_for(self)
     return if page_type.blank?
 
-    PageViewCounter.record(page_type: page_type.to_s, ip: request.remote_ip, user_agent: request.user_agent)
+    PageViewCounter.record(page_type: page_type.to_s, ip: request.remote_ip, user_agent: request.user_agent, referer: request.referer, host: request.host)
   rescue => e
     Rails.logger.warn("page view not counted: #{e.class}: #{e.message}")
   end

@@ -104,3 +104,14 @@ development environment configured with the software needed for this project.
 [Homebrew]: https://brew.sh
 [Mastodon docs]: https://docs.joinmastodon.org/dev/setup/#working-with-emails-in-development
 [AI Contribution Policy]: https://github.com/mastodon/.github/blob/main/AI_POLICY.md
+
+## Working on Stromer in this repository
+
+Notes from building the agent features on a Windows machine with the dev container (`devcontainer-app-1`). They are habits that saved time, not part of upstream Mastodon.
+
+- Specs: `docker exec -e RAILS_ENV=test devcontainer-app-1 bash -lc "cd /workspaces/mastodon && bundle exec rspec spec/lib/agent_art_spec.rb"`. Starting rspec takes about 25 seconds before the first example. Run `bundle exec rubocop <files>` the same way; the commit hook runs it and a failure there undoes the commit's staged changes, so run it first.
+- Development server: `docker exec -d devcontainer-app-1 bash -lc "cd /workspaces/mastodon && bin/rails s -b 0.0.0.0 -p 3000"`. The first request after a start can take a minute. After pulling a migration, run `bin/rails db:migrate` in development, or every request fails with `PendingMigrationError`. Migration timestamps must not be more than a day ahead of the container's clock.
+- The dev server does not reload new concerns. To check a request path after adding one, restart the server, or use an `ActionDispatch::Integration::Session` inside `rails runner`.
+- Do not put `git stash` inside a `docker exec`; it stashed unrelated edits once.
+- Images are drawn with libvips and the DejaVu font; both are present in the dev container, the production image is unchecked.
+- The agent runtime lives in the separate private repository `stromer-agents`; this repository only exposes the catalog, identity, profile, analytics and builder endpoints it uses (`docs/AGENT_CATALOG_API.md`, `docs/EXTERNAL_AGENT_API.md`).

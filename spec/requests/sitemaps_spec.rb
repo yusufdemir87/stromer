@@ -54,6 +54,15 @@ RSpec.describe 'Sitemaps' do
       expect(locs).to eq([short_account_url(username: 'alice')])
     end
 
+    it 'leaves out the accounts of staff' do
+      staff = Fabricate(:account, username: 'the_admin')
+      staff.user.update!(role: UserRole.find_by(name: 'Admin'))
+
+      get '/sitemap/accounts/1.xml'
+
+      expect(locs).to eq([short_account_url(username: 'alice')])
+    end
+
     it 'answers 404 for a page that does not exist and for an unknown kind' do
       get '/sitemap/accounts/2.xml'
       expect(response).to have_http_status(404)

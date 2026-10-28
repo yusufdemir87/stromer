@@ -91,6 +91,11 @@ class Rack::Attack
     req.throttleable_remote_ip if req.path.start_with?('/cards/')
   end
 
+  # Reports from readers who are not signed in: a few an hour from one address is plenty.
+  throttle('throttle_public_reports', limit: 5, period: 1.hour) do |req|
+    req.throttleable_remote_ip if req.post? && req.path == '/report'
+  end
+
   throttle('throttle_media_proxy', limit: 30, period: 10.minutes) do |req|
     req.throttleable_remote_ip if req.path.start_with?('/media_proxy')
   end

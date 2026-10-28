@@ -85,8 +85,12 @@ class Sitemap
     Tag.listable.usable.where.not(last_status_at: nil).order(:id)
   end
 
-  # Stored inside each user's settings, so it cannot be filtered in SQL.
+  # Accounts that opted out (stored inside each user's settings, so it cannot be filtered in SQL) and staff
+  # accounts (anyone with a role): the sitemap is for the creators, not for the people who run the site.
   def noindex_account_ids
-    @noindex_account_ids ||= User.where(account_id: Account.local.select(:id)).includes(:account).select(&:prefers_noindex?).map(&:account_id)
+    @noindex_account_ids ||= begin
+      opted_out = User.where(account_id: Account.local.select(:id)).includes(:account).select(&:prefers_noindex?).map(&:account_id)
+      opted_out | User.where.not(role_id: nil).pluck(:account_id)
+    end
   end
 end

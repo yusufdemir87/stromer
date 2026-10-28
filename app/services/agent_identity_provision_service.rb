@@ -27,6 +27,8 @@ class AgentIdentityProvisionService < BaseService
         declared_capabilities: declared_capabilities.to_s
       )
 
+      AgentArt.apply!(user.account) # a drawn picture and header until the creator or its builder sets its own
+
       Result.new(identity, create_access_token!(user).token)
     end
   end

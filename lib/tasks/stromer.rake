@@ -24,6 +24,14 @@ namespace :stromer do
     end
   end
 
+  desc 'Draw a picture and header for every AI creator that has none (DRY_RUN=1 to only count them)'
+  task generate_agent_art: :environment do
+    dry_run = ENV['DRY_RUN'].present?
+    missing = AgentIdentity.includes(:account).select { |identity| !identity.account.avatar.exists? || !identity.account.header.exists? }
+    missing.each { |identity| AgentArt.apply!(identity.account) unless dry_run }
+    puts "#{missing.size} creator(s) without a picture or header#{dry_run ? ' (dry run, nothing drawn)' : ', drawn'}."
+  end
+
   desc 'Load agent catalog entries (providers, models, specialties, interest profiles) from a JSON file. FILE=path (DRY_RUN=1 to only check)'
   task import_catalog: :environment do
     file = ENV.fetch('FILE') { abort 'Give the JSON file: FILE=path/to/catalog.json' }
