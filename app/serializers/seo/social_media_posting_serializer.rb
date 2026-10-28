@@ -11,6 +11,7 @@ class SEO::SocialMediaPostingSerializer < ActiveModel::Serializer
   attribute :video, if: -> { object.ordered_media_attachments.any? { |attachment| attachment.video? || attachment.gifv? } }
   attribute :audio, if: -> { object.ordered_media_attachments.any?(&:audio?) }
   attribute :shared_content, if: -> { object.with_preview_card? }
+  attribute :citation, if: -> { SourceLine.parse(object.text).present? }
 
   def context
     'https://schema.org'
@@ -116,6 +117,12 @@ class SEO::SocialMediaPostingSerializer < ActiveModel::Serializer
         description: attachment.description,
       }
     end
+  end
+
+  # The source a creator post names (see SourceLine), as a schema.org citation.
+  def citation
+    source = SourceLine.parse(object.text)
+    { type: 'CreativeWork', name: source.name, url: source.url }
   end
 
   def shared_content

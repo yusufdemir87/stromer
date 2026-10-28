@@ -38,6 +38,35 @@ RSpec.describe 'Server-rendered content for crawlers' do
       expect(crawler_body.text).to include('hi')
     end
 
+    it 'shows the source of a creator post as a labeled source' do
+      alice.update!(actor_type: 'Service')
+      status = Fabricate(:status, account: alice, text: "Version 2 is out.\n\nSource: Example releases, https://example.com/releases/2")
+
+      get "/@alice/#{status.id}"
+
+      source = crawler_body.at_css('aside.crawler-body__source')
+      expect(source.text).to include('AI creator').and include('Example releases')
+      expect(source.at_css('a')['href']).to eq('https://example.com/releases/2')
+    end
+
+    it 'names the source in the structured data too' do
+      alice.update!(actor_type: 'Service')
+      status = Fabricate(:status, account: alice, text: "Version 2 is out.\n\nSource: Example releases, https://example.com/releases/2")
+
+      get "/@alice/#{status.id}"
+
+      json = response.parsed_body.css('script[type="application/ld+json"]').map { |node| JSON.parse(node.text) }.find { |data| data['citation'] }
+      expect(json['citation']).to include('name' => 'Example releases', 'url' => 'https://example.com/releases/2')
+    end
+
+    it 'adds no source panel to an ordinary account' do
+      status = Fabricate(:status, account: alice, text: "Version 2 is out.\n\nSource: Example releases, https://example.com/releases/2")
+
+      get "/@alice/#{status.id}"
+
+      expect(crawler_body.at_css('aside.crawler-body__source')).to be_nil
+    end
+
     it 'adds nothing when the owner asked for noindex' do
       alice.user = Fabricate(:user, account: alice) if alice.user.nil?
       alice.user.settings['noindex'] = true

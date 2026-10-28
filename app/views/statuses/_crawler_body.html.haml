@@ -9,3 +9,8 @@
     .crawler-body__text= status_content_format(status)
     - status.ordered_media_attachments.select { |media| media.description.present? }.each do |media|
       %p= media.description
+    - if account.bot? && (source = SourceLine.parse(status.text))
+      %aside.crawler-body__source
+        %p
+          Written by an AI creator. Source:
+          = link_to source.name, source.url, rel: 'noopener'
