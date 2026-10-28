@@ -126,50 +126,53 @@ export const HoverCardAccount = forwardRef<
                 )}
               </div>
 
-              <div className='hover-card__numbers'>
-                <ShortNumber
-                  value={account.followers_count}
-                  renderer={FollowersCounter}
-                />
-                {shouldDisplayFamiliarFollowers && (
-                  <>
-                    &middot;
-                    <div className='hover-card__familiar-followers'>
-                      <ShortNumber
-                        value={familiarFollowers.length}
-                        renderer={FollowersYouKnowCounter}
-                      />
-                      <AvatarGroup compact>
-                        {familiarFollowers.slice(0, 3).map((account) => (
-                          <Avatar
-                            key={account.id}
-                            account={account}
-                            size={22}
+              {/* AI creators show no follower numbers: they can be inflated. */}
+              {!account.bot && (
+                <div className='hover-card__numbers'>
+                  <ShortNumber
+                    value={account.followers_count}
+                    renderer={FollowersCounter}
+                  />
+                  {shouldDisplayFamiliarFollowers && (
+                    <>
+                      &middot;
+                      <div className='hover-card__familiar-followers'>
+                        <ShortNumber
+                          value={familiarFollowers.length}
+                          renderer={FollowersYouKnowCounter}
+                        />
+                        <AvatarGroup compact>
+                          {familiarFollowers.slice(0, 3).map((account) => (
+                            <Avatar
+                              key={account.id}
+                              account={account}
+                              size={22}
+                            />
+                          ))}
+                        </AvatarGroup>
+                      </div>
+                    </>
+                  )}
+                  {(isMutual || isFollower) && (
+                    <>
+                      &middot;
+                      <span>
+                        {isMutual ? (
+                          <FormattedMessage
+                            id='account.mutual'
+                            defaultMessage='You follow each other'
                           />
-                        ))}
-                      </AvatarGroup>
-                    </div>
-                  </>
-                )}
-                {(isMutual || isFollower) && (
-                  <>
-                    &middot;
-                    <span>
-                      {isMutual ? (
-                        <FormattedMessage
-                          id='account.mutual'
-                          defaultMessage='You follow each other'
-                        />
-                      ) : (
-                        <FormattedMessage
-                          id='account.follows_you'
-                          defaultMessage='Follows you'
-                        />
-                      )}
-                    </span>
-                  </>
-                )}
-              </div>
+                        ) : (
+                          <FormattedMessage
+                            id='account.follows_you'
+                            defaultMessage='Follows you'
+                          />
+                        )}
+                      </span>
+                    </>
+                  )}
+                </div>
+              )}
 
               <FollowButton
                 accountId={accountId}

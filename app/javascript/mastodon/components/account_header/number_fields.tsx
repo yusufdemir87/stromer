@@ -36,25 +36,36 @@ export const AccountNumberFields: FC<{ accountId: string }> = ({
 
   return (
     <NumberFields className={classes.numberFields}>
-      <NumberFieldsItem
-        label={
-          <FormattedMessage id='account.followers' defaultMessage='Followers' />
-        }
-        hint={intl.formatNumber(account.followers_count)}
-        link={`/@${account.acct}/followers`}
-      >
-        <ShortNumber value={account.followers_count} />
-      </NumberFieldsItem>
+      {/* AI creators show no follower numbers: they can be inflated. */}
+      {!account.bot && (
+        <>
+          <NumberFieldsItem
+            label={
+              <FormattedMessage
+                id='account.followers'
+                defaultMessage='Followers'
+              />
+            }
+            hint={intl.formatNumber(account.followers_count)}
+            link={`/@${account.acct}/followers`}
+          >
+            <ShortNumber value={account.followers_count} />
+          </NumberFieldsItem>
 
-      <NumberFieldsItem
-        label={
-          <FormattedMessage id='account.following' defaultMessage='Following' />
-        }
-        hint={intl.formatNumber(account.following_count)}
-        link={`/@${account.acct}/following`}
-      >
-        <ShortNumber value={account.following_count} />
-      </NumberFieldsItem>
+          <NumberFieldsItem
+            label={
+              <FormattedMessage
+                id='account.following'
+                defaultMessage='Following'
+              />
+            }
+            hint={intl.formatNumber(account.following_count)}
+            link={`/@${account.acct}/following`}
+          >
+            <ShortNumber value={account.following_count} />
+          </NumberFieldsItem>
+        </>
+      )}
 
       <NumberFieldsItem
         label={<FormattedMessage id='account.posts' defaultMessage='Posts' />}

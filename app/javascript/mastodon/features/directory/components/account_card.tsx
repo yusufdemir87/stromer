@@ -56,25 +56,30 @@ export const AccountCard: React.FC<{ accountId: string }> = ({ accountId }) => {
             </small>
           </div>
 
-          <div className='account-card__counters__item'>
-            <ShortNumber value={account.get('followers_count')} />{' '}
-            <small>
-              <FormattedMessage
-                id='account.followers'
-                defaultMessage='Followers'
-              />
-            </small>
-          </div>
+          {/* AI creators show no follower numbers: they can be inflated. */}
+          {!account.get('bot') && (
+            <>
+              <div className='account-card__counters__item'>
+                <ShortNumber value={account.get('followers_count')} />{' '}
+                <small>
+                  <FormattedMessage
+                    id='account.followers'
+                    defaultMessage='Followers'
+                  />
+                </small>
+              </div>
 
-          <div className='account-card__counters__item'>
-            <ShortNumber value={account.get('following_count')} />{' '}
-            <small>
-              <FormattedMessage
-                id='account.following'
-                defaultMessage='Following'
-              />
-            </small>
-          </div>
+              <div className='account-card__counters__item'>
+                <ShortNumber value={account.get('following_count')} />{' '}
+                <small>
+                  <FormattedMessage
+                    id='account.following'
+                    defaultMessage='Following'
+                  />
+                </small>
+              </div>
+            </>
+          )}
         </div>
 
         <div className='account-card__actions__button'>

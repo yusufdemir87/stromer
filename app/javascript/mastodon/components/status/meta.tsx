@@ -33,7 +33,8 @@ import { statusLink } from './utils';
 
 export const StatusMeta: React.FC<{
   status: AnyStatusShape;
-}> = ({ status }) => {
+  withCounters?: boolean;
+}> = ({ status, withCounters = true }) => {
   const { id, created_at, edited_at, application } = status;
 
   const visibility = useMemo(
@@ -68,53 +69,55 @@ export const StatusMeta: React.FC<{
         <li>{visibility}</li>
       </ul>
 
-      <ul className={classes.list}>
-        <FormattedMessage
-          id='status.replies_count'
-          defaultMessage='{count, plural, one {{counter} reply} other {{counter} replies}}'
-          values={{
-            count: status.replies_count,
-            counter: <AnimatedNumber value={status.replies_count} />,
-          }}
-          tagName='li'
-        />
-        <li>
-          <Link to={`${baseStatusLink}/quotes`}>
-            <FormattedMessage
-              id='status.quotes_count'
-              defaultMessage='{count, plural, one {{counter} quote} other {{counter} quotes}}'
-              values={{
-                count: status.quotes_count,
-                counter: <AnimatedNumber value={status.quotes_count} />,
-              }}
-            />
-          </Link>
-        </li>
-        <li>
-          <Link to={`${baseStatusLink}/reblogs`}>
-            <FormattedMessage
-              id='status.reblogs_count'
-              defaultMessage='{count, plural, one {{counter} boost} other {{counter} boosts}}'
-              values={{
-                count: status.reblogs_count,
-                counter: <AnimatedNumber value={status.reblogs_count} />,
-              }}
-            />
-          </Link>
-        </li>
-        <li>
-          <Link to={`${baseStatusLink}/favourites`}>
-            <FormattedMessage
-              id='status.likes_count'
-              defaultMessage='{count, plural, one {{counter} like} other {{counter} likes}}'
-              values={{
-                count: status.favourites_count,
-                counter: <AnimatedNumber value={status.favourites_count} />,
-              }}
-            />
-          </Link>
-        </li>
-      </ul>
+      {withCounters && (
+        <ul className={classes.list}>
+          <FormattedMessage
+            id='status.replies_count'
+            defaultMessage='{count, plural, one {{counter} reply} other {{counter} replies}}'
+            values={{
+              count: status.replies_count,
+              counter: <AnimatedNumber value={status.replies_count} />,
+            }}
+            tagName='li'
+          />
+          <li>
+            <Link to={`${baseStatusLink}/quotes`}>
+              <FormattedMessage
+                id='status.quotes_count'
+                defaultMessage='{count, plural, one {{counter} quote} other {{counter} quotes}}'
+                values={{
+                  count: status.quotes_count,
+                  counter: <AnimatedNumber value={status.quotes_count} />,
+                }}
+              />
+            </Link>
+          </li>
+          <li>
+            <Link to={`${baseStatusLink}/reblogs`}>
+              <FormattedMessage
+                id='status.reblogs_count'
+                defaultMessage='{count, plural, one {{counter} boost} other {{counter} boosts}}'
+                values={{
+                  count: status.reblogs_count,
+                  counter: <AnimatedNumber value={status.reblogs_count} />,
+                }}
+              />
+            </Link>
+          </li>
+          <li>
+            <Link to={`${baseStatusLink}/favourites`}>
+              <FormattedMessage
+                id='status.likes_count'
+                defaultMessage='{count, plural, one {{counter} like} other {{counter} likes}}'
+                values={{
+                  count: status.favourites_count,
+                  counter: <AnimatedNumber value={status.favourites_count} />,
+                }}
+              />
+            </Link>
+          </li>
+        </ul>
+      )}
     </div>
   );
 };

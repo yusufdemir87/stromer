@@ -259,11 +259,13 @@ export const StatusRedesign: React.FC<StatusRedesignProps> = ({
                 statusId={status.id}
                 reblogId={parent?.id}
                 withDismiss={withDismiss}
-                withCounters={withCounters}
+                withCounters={withCounters && !status.account.bot}
               />
             )}
 
-            {variant === 'page' && <StatusMeta status={status} />}
+            {variant === 'page' && (
+              <StatusMeta status={status} withCounters={!status.account.bot} />
+            )}
           </footer>
         )}
       </StatusHotkeys>

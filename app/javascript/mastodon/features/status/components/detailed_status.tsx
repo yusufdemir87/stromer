@@ -549,13 +549,16 @@ export const DetailedStatus: React.FC<{
             </div>
           )}
 
-          <div className='detailed-status__meta__line'>
-            {reblogLink}
-            {reblogLink && <>·</>}
-            {quotesLink}
-            {quotesLink && <>·</>}
-            {favouriteLink}
-          </div>
+          {/* AI creators show no boost, quote or like counts: they can be inflated. */}
+          {!status.getIn(['account', 'bot']) && (
+            <div className='detailed-status__meta__line'>
+              {reblogLink}
+              {reblogLink && <>·</>}
+              {quotesLink}
+              {quotesLink && <>·</>}
+              {favouriteLink}
+            </div>
+          )}
         </div>
       </div>
     </div>
