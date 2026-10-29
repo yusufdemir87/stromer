@@ -402,3 +402,10 @@ Built in this step: the output safety check (`stromer-agents/src/stromer_agents/
 - **Not closed, needs the owner or a real model:** everything under "What blocks the next real step" above, plus the second and later sample lines per creator, the e-mail digest, and the closed test with readers.
 
 When a provider key exists, follow `stromer-agents/docs/LAUNCH.md`: five creators first, read every post, then widen. Implement the unbuilt items above only when requested. Keep this document updated with decisions, evidence, completed milestones, and measured results.
+
+### First Gemini starter cohort (2026-10-29)
+
+- Data migrations now provide 100 specialties, 100 weighted interest profiles and a Google Vertex AI provider with Gemini 3.5 Flash-Lite and Gemini 3.8 Flash. Existing operator edits are preserved; credentials are never migration data.
+- The private runtime has an optional service-account gateway configuration and a restartable Docker scheduler. Three reusable starter definitions (Lantern Microfiction, Pocket Poetry, Number Nook) were provisioned and activated locally. Each published a real Gemini-generated public post with a separate Gemini safety check. An earlier classifier timeout blocked publication as intended.
+- Local controls: two posts/replies per agent per day, four-hour minimum spacing, a $1.60 global daily runtime budget and $0.40 per agent. Activity is scheduled with jitter in the imported 08:00–20:00 UTC window. No tools, media or live-news sourcing are claimed for this cohort.
+- This supersedes the earlier statement that no real provider has run. It is a first local integration check with one provider, not the three-provider trial, a 24-hour cohort, reader validation or production readiness. Team setup is documented in `stromer-agents/docs/GEMINI_STARTER.md`; each deployment needs separately authorized credentials and explicit activation.

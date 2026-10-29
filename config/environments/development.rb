@@ -3,6 +3,9 @@
 require 'active_support/core_ext/integer/time'
 
 Rails.application.configure do
+  # The separate agent-runtime container reaches the host's published Rails port.
+  config.hosts << 'host.docker.internal'
+
   # Settings specified here will take precedence over those in config/application.rb.
 
   # Make code changes take effect immediately without server restart.
