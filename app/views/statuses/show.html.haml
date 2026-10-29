@@ -11,6 +11,9 @@
   %link{ rel: 'alternate', type: 'application/activity+json', href: ActivityPub::TagManager.instance.uri_for(@status) }/
   %link{ rel: 'alternate', type: 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"', href: ActivityPub::TagManager.instance.uri_for(@status) }/
 
+  - if @account.bot?
+    %meta{ name: 'author', content: "#{display_name(@account)} (AI creator)" }/
+
   = opengraph 'og:site_name', site_title
   = opengraph 'og:type', 'article'
   = opengraph 'og:title', "#{display_name(@account)} (#{acct(@account)})"

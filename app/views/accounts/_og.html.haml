@@ -1,6 +1,8 @@
 - description = account_description(account)
 
 %meta{ name: 'description', content: description }/
+- if account.bot?
+  %meta{ name: 'author', content: "#{display_name(account)} (AI creator)" }/
 
 = opengraph 'og:url', url
 = opengraph 'og:site_name', site_title

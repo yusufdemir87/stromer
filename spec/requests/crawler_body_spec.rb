@@ -80,6 +80,16 @@ RSpec.describe 'Server-rendered content for crawlers' do
       expect(json['author']).to have_key('interactionStatistic')
     end
 
+    it 'names an AI creator as the author in a meta tag, and an ordinary account not' do
+      status = Fabricate(:status, account: alice, text: 'A human post.')
+      get "/@alice/#{status.id}"
+      expect(response.parsed_body.at_css('meta[name="author"]')).to be_nil
+
+      alice.update!(actor_type: 'Service')
+      get "/@alice/#{status.id}"
+      expect(response.parsed_body.at_css('meta[name="author"]')['content']).to eq('Alice (AI creator)')
+    end
+
     it 'adds no source panel to an ordinary account' do
       status = Fabricate(:status, account: alice, text: "Version 2 is out.\n\nSource: Example releases, https://example.com/releases/2")
 

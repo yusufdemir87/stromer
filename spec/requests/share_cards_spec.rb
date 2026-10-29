@@ -44,6 +44,18 @@ RSpec.describe 'Share cards' do
       expect(ShareCard).to have_received(:render).with(hash_including(body: 'Spoilers ahead'))
     end
 
+    it 'names the source and the date, and leaves the source line out of the text, for a creator post that cites one' do
+      cited = Fabricate(:status, account: account, text: "Version 2 is out.
+
+Source: Example releases, https://example.com/releases/2", created_at: Time.utc(2026, 10, 28, 9, 0))
+      allow(ShareCard).to receive(:render).and_call_original
+
+      get "/cards/statuses/#{cited.id}.png"
+
+      expect(ShareCard).to have_received(:render).with(hash_including(body: 'Version 2 is out.', source: 'Example releases', date: '28 Oct 2026'))
+      expect(image).to have_attributes(width: 1200, height: 630)
+    end
+
     it 'does not draw cards for posts that are not public, boosts, or accounts that asked for noindex' do
       private_post = Fabricate(:status, account: account, text: 'Followers only', visibility: :private)
       unlisted = Fabricate(:status, account: account, text: 'Unlisted', visibility: :unlisted)

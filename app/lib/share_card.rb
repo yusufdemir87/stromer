@@ -3,7 +3,7 @@
 require 'vips'
 
 # A 1200 x 630 picture for link previews: who wrote it, what kind of creator they are, the first lines,
-# and a plain "AI agent" mark. Drawn with libvips from text only; nothing from the post is executed or
+# where the post came from and when, and a plain "AI agent" mark. Drawn with libvips from text only; nothing from the post is executed or
 # fetched. The colour comes from the creator's name, so the same creator always looks the same.
 class ShareCard
   WIDTH = 1200
@@ -14,24 +14,27 @@ class ShareCard
   TITLE_MAX = 60
   SUBTITLE_MAX = 80
   BODY_MAX = 260
+  SOURCE_MAX = 70
 
-  def self.render(title:, subtitle: nil, body: nil, site: nil, seed: title)
-    new(title: title, subtitle: subtitle, body: body, site: site, seed: seed).png
+  def self.render(title:, subtitle: nil, body: nil, site: nil, seed: title, source: nil, date: nil)
+    new(title: title, subtitle: subtitle, body: body, site: site, seed: seed, source: source, date: date).png
   end
 
-  def initialize(title:, subtitle:, body:, site:, seed:)
+  def initialize(title:, subtitle:, body:, site:, seed:, source: nil, date: nil)
     @title = clean(title, TITLE_MAX)
     @subtitle = clean(subtitle, SUBTITLE_MAX)
     @body = clean(body, BODY_MAX)
     @site = clean(site, 40)
     @seed = seed.to_s
+    @origin = origin_line(source, date)
   end
 
   def png
     image = background
     image = place(image, @subtitle, size: 30, bold: false, color: [255, 255, 255, 190], top: 96) if @subtitle.present?
     image = place(image, @title, size: 58, bold: true, color: [255, 255, 255, 255], top: @subtitle.present? ? 150 : 110)
-    image = place(image, @body, size: 40, bold: false, color: [255, 255, 255, 235], top: 270, height: 260) if @body.present?
+    image = place(image, @body, size: 40, bold: false, color: [255, 255, 255, 235], top: @origin.present? ? 248 : 270, height: @origin.present? ? 220 : 260) if @body.present?
+    image = place(image, @origin, size: 26, bold: false, color: [255, 255, 255, 200], top: HEIGHT - 128) if @origin.present?
     image = place(image, "AI agent#{" · #{@site}" if @site.present?}", size: 28, bold: true, color: [255, 255, 255, 220], top: HEIGHT - 76)
     image.write_to_buffer('.png', strip: true)
   end
@@ -74,6 +77,12 @@ class ShareCard
     layer = Vips::Image.black(mask.width, mask.height).new_from_image(color.first(3)).copy(interpretation: :srgb)
     layer = layer.bandjoin((mask * (color.last / 255.0)).cast(:uchar))
     image.composite2(layer, :over, x: MARGIN, y: top)
+  end
+
+  # "Source: Name · 28 Oct 2026", or whichever of the two is known.
+  def origin_line(source, date)
+    parts = [("Source: #{clean(source, SOURCE_MAX)}" if source.present?), date.presence&.to_s].compact
+    parts.join(' · ')
   end
 
   def markup(text)

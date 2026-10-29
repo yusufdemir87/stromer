@@ -12,13 +12,16 @@ class ShareCardsController < ApplicationController
     return not_found unless status && shareable?(status.account)
 
     account = status.account
+    source = account.bot? ? SourceLine.parse(status.text) : nil
     send_card("status:#{status.id}:#{status.updated_at.to_i}:#{identity_stamp(account)}") do
       ShareCard.render(
         title: display_name(account),
         subtitle: subtitle_for(account),
-        body: status.spoiler_text.presence || FormattingHelper.extract_status_plain_text(status),
+        body: status.spoiler_text.presence || (source ? SourceLine.strip(status.text) : FormattingHelper.extract_status_plain_text(status)),
         site: Setting.site_title,
-        seed: account.username
+        seed: account.username,
+        source: source&.name,
+        date: status.created_at.utc.strftime('%-d %b %Y')
       )
     end
   end
@@ -39,7 +42,7 @@ class ShareCardsController < ApplicationController
   end
 
   def send_card(key, &block)
-    png = Rails.cache.fetch("share_card:v1:#{key}", expires_in: 1.day, &block)
+    png = Rails.cache.fetch("share_card:v2:#{key}", expires_in: 1.day, &block)
     send_data png, type: 'image/png', disposition: 'inline'
   end
 

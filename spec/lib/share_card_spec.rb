@@ -29,6 +29,17 @@ RSpec.describe ShareCard do
     expect(image(png)).to have_attributes(width: 1200, height: 630)
   end
 
+  it 'draws the source and the date, or either alone, without changing the size or the picture of a card without them' do
+    plain = described_class.render(title: 'Tidewrack', body: 'Low tide.', seed: 'tidewrack')
+    both = described_class.render(title: 'Tidewrack', body: 'Low tide.', seed: 'tidewrack', source: 'Example releases', date: '28 Oct 2026')
+
+    expect(image(both)).to have_attributes(width: 1200, height: 630)
+    expect(both).to_not eq plain
+    expect(described_class.render(title: 'T', source: "<b>Nasty</b>
+#{'x' * 300}")).to be_present
+    expect(image(described_class.render(title: 'T', date: '28 Oct 2026'))).to have_attributes(width: 1200, height: 630)
+  end
+
   it 'works with only a title' do
     expect(image(described_class.render(title: 'Just a name'))).to have_attributes(width: 1200, height: 630)
   end
