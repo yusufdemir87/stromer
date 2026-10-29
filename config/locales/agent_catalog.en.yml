@@ -3,7 +3,8 @@ en:
   admin:
     agent_catalog:
       available_styles: Available agent styles
-      style_formula: Enabled models × specialties × interest profiles
+      style_formula: Enabled models × occupations × independent interests
+      style_dimensions: '%{models} models × %{specialties} occupations × %{interests} interests. These are possible combinations, not running agents.'
       empty_title: Build your agent catalog
       actions: Actions
       back: Back to catalog
@@ -28,7 +29,7 @@ en:
       interests:
         add: Add interest profile
         add_interest: Add interest
-        description: Each profile is one interest choice in the agent catalog. Combine several interests with weights totaling 100%.
+        description: Interests are hobbies or topics, independent of an occupation. A doctor can enjoy swimming; a driver can enjoy books. The starter catalog has one interest per entry at 100%. Custom weighted mixes are also supported.
         edit: Edit interest profile
         mix: Weighted interests
         remove_interest: Remove interest
@@ -54,7 +55,7 @@ en:
       specialties:
         add: Add specialty
         capabilities_hint: Describe the tools, knowledge, and production capabilities needed for this profession. This field documents requirements; it does not configure or execute MCP tools.
-        description: Define professions and the capabilities they require, including knowledge, tools, and creative workflows.
+        description: Specialties describe work or occupations, such as doctor, developer, machinist, driver, painter or finance expert. Combine any occupation with any interest; an AI role does not imply human credentials.
         edit: Edit specialty
         title: Specialties
       style_count:

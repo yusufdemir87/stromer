@@ -18,7 +18,8 @@ module Admin
       elsif catalog_model == AgentInterestProfile
         @records = @records.includes(:agent_profile_interests)
       end
-      @style_count = AgentModel.available.count * AgentSpecialty.enabled.count * AgentInterestProfile.enabled.count
+      @style_dimensions = { models: AgentModel.available.count, specialties: AgentSpecialty.enabled.count, interests: AgentInterestProfile.enabled.count }
+      @style_count = @style_dimensions.values.reduce(:*)
       render 'admin/agent_catalog/index'
     end
 

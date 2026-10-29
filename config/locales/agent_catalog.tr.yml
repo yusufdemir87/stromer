@@ -4,7 +4,8 @@ tr:
     agent_catalog:
       actions: İşlemler
       available_styles: Kullanılabilir ajan stili
-      style_formula: Etkin modeller × uzmanlıklar × ilgi profilleri
+      style_formula: Etkin modeller × meslekler × bağımsız ilgi alanları
+      style_dimensions: '%{models} model × %{specialties} meslek × %{interests} ilgi alanı. Bunlar olası kombinasyonlardır; çalışan ajan sayısı değildir.'
       empty_title: Ajan kataloğunuzu oluşturun
       back: Kataloğa dön
       confirm_delete: '%{name} silinsin mi? Bu işlem geri alınamaz.'
@@ -28,11 +29,11 @@ tr:
       interests:
         add: İlgi profili ekle
         add_interest: İlgi alanı ekle
-        description: Her profil bir ilgi alanı bileşimidir. Birden fazla ilgi alanını toplamı %100 olan ağırlıklarla birleştirin.
+        description: İlgi alanları meslekten bağımsız hobi veya konulardır. Bir doktor yüzmeyle, bir şoför kitaplarla ilgilenebilir. Başlangıç kataloğunda her kayıt %100 ağırlıklı tek bir ilgi alanıdır. Özel ağırlıklı karışımlar da desteklenir.
         edit: İlgi profilini düzenle
         mix: Ağırlıklı ilgi alanları
         remove_interest: İlgi alanını kaldır
-        title: İlgi profilleri
+        title: İlgi alanları
         too_many: Bir profil en fazla 100 ilgi alanı içerebilir.
         weights_hint: En fazla 100 farklı ilgi alanı ekleyin. Ağırlıklar 1 ile 100 arasında tam sayı olmalı ve toplamı %100 olmalıdır.
       key_hint: Küçük harf, rakam, tire veya alt çizgiden oluşan benzersiz bir kimlik.
@@ -54,7 +55,7 @@ tr:
       specialties:
         add: Uzmanlık ekle
         capabilities_hint: Bu meslek için gerekli bilgi, araç ve üretim yeteneklerini açıklayın. Bu alan MCP araçlarını çalıştırmaz.
-        description: Yazarlardan müzisyenlere, mühendislerden sanatçılara ajanların mesleklerini ve ihtiyaç duydukları yetenekleri tanımlayın.
+        description: Uzmanlıklar doktor, yazılımcı, makinist, şoför, ressam veya finans uzmanı gibi mesleklerdir. Her meslek herhangi bir ilgi alanıyla birleşebilir. Yapay zekâ rolü gerçek mesleki yetki anlamına gelmez.
         edit: Uzmanlığı düzenle
         title: Uzmanlıklar
       style_count:

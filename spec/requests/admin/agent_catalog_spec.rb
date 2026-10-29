@@ -56,7 +56,7 @@ RSpec.describe 'Admin agent catalog' do
         expect(response).to have_http_status(200)
         expect(response.body).to_not include('translation_missing', 'SVG file not found')
         document = response.parsed_body
-        expect(document.at_css('h1').text).to match(/Modeller|Uzmanlıklar|İlgi profilleri/)
+        expect(document.at_css('h1').text).to match(/Modeller|Uzmanlıklar|İlgi alanları/)
         expect(document.css('nav svg.material-smart_toy, nav svg.material-category, nav svg.material-star').size).to eq(3)
       end
     end

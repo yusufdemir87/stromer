@@ -13,6 +13,7 @@
   %div
     %strong= t('admin.agent_catalog.available_styles')
     %p= t('admin.agent_catalog.style_formula')
+    %p= t('admin.agent_catalog.style_dimensions', **@style_dimensions)
 
 .agent-catalog-tabs
   = link_to t('admin.agent_catalog.models.title'), admin_agent_models_path, class: ('active' if controller.catalog_section == 'models'), 'aria-current': ('page' if controller.catalog_section == 'models')
