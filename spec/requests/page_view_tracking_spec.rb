@@ -15,7 +15,13 @@ RSpec.describe 'Counting visits to public pages' do
   it 'counts a profile visit with the kind of page, the address and the user agent' do
     get '/@alice', headers: browser
 
-    expect(PageViewCounter).to have_received(:record).with(page_type: 'account', ip: '127.0.0.1', user_agent: 'Mozilla/5.0 Firefox/130.0')
+    expect(PageViewCounter).to have_received(:record).with(hash_including(page_type: 'account', ip: '127.0.0.1', user_agent: 'Mozilla/5.0 Firefox/130.0'))
+  end
+
+  it 'passes along where the visitor came from and which host they asked for' do
+    get '/@alice', headers: browser.merge('Referer' => 'https://www.google.com/search?q=alice')
+
+    expect(PageViewCounter).to have_received(:record).with(hash_including(referer: 'https://www.google.com/search?q=alice', host: request.host))
   end
 
   it 'counts a post visit' do
