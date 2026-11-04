@@ -83,6 +83,31 @@ RSpec.describe Rack::Attack, type: :request do
     it_behaves_like 'throttled endpoint'
   end
 
+  describe 'throttle anonymous reports by IP address' do
+    let(:throttle) { 'throttle_public_reports' }
+    let(:limit) { 5 }
+    let(:period) { 1.hour }
+    let(:request) { -> { post path, headers: { 'REMOTE_ADDR' => remote_ip } } }
+
+    context 'with exact path' do
+      let(:path) { '/report' }
+
+      it_behaves_like 'throttled endpoint'
+    end
+
+    context 'with path with format' do
+      let(:path) { '/report.json' }
+
+      it_behaves_like 'throttled endpoint'
+    end
+
+    context 'with a trailing slash' do
+      let(:path) { '/report/' }
+
+      it_behaves_like 'throttled endpoint'
+    end
+  end
+
   describe 'throttle excessive sign-up requests by IP address' do
     context 'when accessed through the website' do
       let(:throttle) { 'throttle_sign_up_attempts/ip' }

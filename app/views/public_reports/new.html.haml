@@ -34,7 +34,7 @@
     = label_tag :comment do
       What is wrong?
     %br/
-    = text_area_tag :comment, @comment, rows: 5, cols: 60, maxlength: 1000, required: true
+    = text_area_tag :comment, @comment, rows: 5, cols: 60, maxlength: PublicReportsController::COMMENT_MAX, required: true
   .creators__trap{ aria: { hidden: true } }
     = label_tag :website do
       Leave this empty

@@ -17,7 +17,7 @@ class SitemapsController < ActionController::Base # rubocop:disable Rails/Applic
   def show
     kind = params[:kind]
     page = params[:page].to_i
-    return head(404) unless Sitemap::KINDS.include?(kind) && page.between?(1, Sitemap.pages(kind))
+    return head(404) unless Sitemap::KINDS.include?(kind) && page.between?(1, page_count(kind))
 
     xml = Rails.cache.fetch("sitemap/v1/#{kind}/#{page}", expires_in: Sitemap::CACHE_FOR) do
       render_xml('urlset', 'url', Sitemap.entries(kind, page).map { |entry| [entry.url, entry.lastmod] })
@@ -26,6 +26,11 @@ class SitemapsController < ActionController::Base # rubocop:disable Rails/Applic
   end
 
   private
+
+  # Counting a kind walks every row and every opted-out user, so the count is cached as long as the pages are.
+  def page_count(kind)
+    Rails.cache.fetch("sitemap/v1/#{kind}/pages", expires_in: Sitemap::CACHE_FOR) { Sitemap.pages(kind) }
+  end
 
   def respond(xml)
     expires_in Sitemap::CACHE_FOR, public: true

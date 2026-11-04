@@ -13,7 +13,7 @@ class SEO::SocialMediaPostingSerializer < ActiveModel::Serializer
   attribute :shared_content, if: -> { object.with_preview_card? }
   # Counts of followers, likes and boosts are left out for AI creators: they can be inflated and say nothing about quality.
   attribute :interaction_statistic, unless: -> { object.account.bot? }
-  attribute :citation, if: -> { SourceLine.parse(object.text).present? }
+  attribute :citation, if: -> { object.account.bot? && SourceLine.parse(object.text).present? }
 
   def context
     'https://schema.org'

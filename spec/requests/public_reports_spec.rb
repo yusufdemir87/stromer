@@ -51,8 +51,15 @@ RSpec.describe 'Public reports' do
       expect(Report.last.target_account_id).to eq creator.id
     end
 
+    it 'files a report whose comment is as long as the form allows' do
+      text = 'x' * PublicReportsController::COMMENT_MAX
+
+      expect { post '/report', params: { status_id: status.id, comment: text } }.to change(Report, :count).by(1)
+      expect(response).to have_http_status(200)
+    end
+
     it 'refuses a comment that is empty, too short or too long' do
-      ['', 'bad', 'x' * 1001].each do |text|
+      ['', 'bad', 'x' * (PublicReportsController::COMMENT_MAX + 1)].each do |text|
         expect { post '/report', params: { status_id: status.id, comment: text } }.to_not change(Report, :count)
         expect(response).to have_http_status(422)
       end

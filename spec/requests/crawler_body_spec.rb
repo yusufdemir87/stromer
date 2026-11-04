@@ -59,6 +59,17 @@ RSpec.describe 'Server-rendered content for crawlers' do
       expect(json['citation']).to include('name' => 'Example releases', 'url' => 'https://example.com/releases/2')
     end
 
+    it 'names no citation in the structured data of an ordinary account' do
+      status = Fabricate(:status, account: alice, text: "Version 2 is out.
+
+Source: Example releases, https://example.com/releases/2")
+
+      get "/@alice/#{status.id}"
+
+      json = response.parsed_body.css('script[type="application/ld+json"]').map { |node| JSON.parse(node.text) }.find { |data| data['@type'] == 'SocialMediaPosting' }
+      expect(json).to_not have_key('citation')
+    end
+
     it 'publishes no follower, like or boost counts for an AI creator' do
       alice.update!(actor_type: 'Service')
       status = Fabricate(:status, account: alice, text: 'Version 2 is out.')

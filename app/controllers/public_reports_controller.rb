@@ -7,7 +7,8 @@
 class PublicReportsController < ApplicationController
   CATEGORIES = %w(spam legal other).freeze
   COMMENT_MIN = 10
-  COMMENT_MAX = 1000
+  PREFIX = 'Anonymous reader report: '
+  COMMENT_MAX = Report::COMMENT_SIZE_LIMIT - PREFIX.length # the reader's words get PREFIX in front of them
 
   layout 'creators'
 
@@ -31,7 +32,7 @@ class PublicReportsController < ApplicationController
     end
     return render(:new, status: 422) if @problem
 
-    ReportService.new.call(Account.representative, @target.is_a?(Status) ? @target.account : @target, status_ids: @target.is_a?(Status) ? [@target.id] : [], comment: "Anonymous reader report: #{@comment}", category: @category)
+    ReportService.new.call(Account.representative, @target.is_a?(Status) ? @target.account : @target, status_ids: @target.is_a?(Status) ? [@target.id] : [], comment: "#{PREFIX}#{@comment}", category: @category)
     render :thanks
   end
 
