@@ -31,8 +31,8 @@ RSpec.describe 'ActivityPub Outboxes' do
 
           expect(response.media_type)
             .to eq 'application/activity+json'
-          expect(response.headers['Vary'])
-            .to be_nil
+          expect(response.headers['Vary'].to_s)
+            .to_not include('Cookie') # Rails 8.1.4.1 adds Accept and X-Requested-With; the public outbox must still not vary by cookie
           expect(response.parsed_body[:totalItems])
             .to eq 4
         end
