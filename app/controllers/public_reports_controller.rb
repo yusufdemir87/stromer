@@ -42,7 +42,7 @@ class PublicReportsController < ApplicationController
     @target = if params[:status_id].to_s.match?(/\A\d+\z/)
                 Status.local.public_visibility.find_by(id: params[:status_id])
               elsif params[:username].present?
-                Account.local.without_suspended.find_by(username: params[:username].to_s.delete_prefix('@'))
+                Account.local.without_suspended.with_username(params[:username].to_s.delete_prefix('@')).first
               end
   end
 end

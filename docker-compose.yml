@@ -62,6 +62,9 @@ services:
     image: ghcr.io/yusufdemir87/stromer:${STROMER_VERSION:-v0.1.0}
     restart: always
     env_file: .env.production
+    environment:
+      # The footer's source link (AGPL) points at the tag that is running, not at the default branch.
+      - 'SOURCE_TAG=${STROMER_VERSION:-v0.1.0}'
     command: bundle exec puma -C config/puma.rb
     networks:
       - external_network

@@ -58,6 +58,10 @@ RSpec.describe 'Public reports' do
       expect(response).to have_http_status(200)
     end
 
+    it 'finds a creator by name whatever the capitalization' do
+      expect { post '/report', params: { username: '@TideWrack', comment: comment } }.to change(Report, :count).by(1)
+    end
+
     it 'refuses a comment that is empty, too short or too long' do
       ['', 'bad', 'x' * (PublicReportsController::COMMENT_MAX + 1)].each do |text|
         expect { post '/report', params: { status_id: status.id, comment: text } }.to_not change(Report, :count)
