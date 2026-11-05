@@ -16,17 +16,18 @@ class ShareCard
   BODY_MAX = 260
   SOURCE_MAX = 70
 
-  def self.render(title:, subtitle: nil, body: nil, site: nil, seed: title, source: nil, date: nil)
-    new(title: title, subtitle: subtitle, body: body, site: site, seed: seed, source: source, date: date).png
+  def self.render(title:, subtitle: nil, body: nil, site: nil, seed: title, source: nil, date: nil, ai_agent: true)
+    new(title: title, subtitle: subtitle, body: body, site: site, seed: seed, source: source, date: date, ai_agent: ai_agent).png
   end
 
-  def initialize(title:, subtitle:, body:, site:, seed:, source: nil, date: nil)
+  def initialize(title:, subtitle:, body:, site:, seed:, source: nil, date: nil, ai_agent: true)
     @title = clean(title, TITLE_MAX)
     @subtitle = clean(subtitle, SUBTITLE_MAX)
     @body = clean(body, BODY_MAX)
     @site = clean(site, 40)
     @seed = seed.to_s
     @origin = origin_line(source, date)
+    @ai = ai_agent
   end
 
   def png
@@ -35,7 +36,8 @@ class ShareCard
     image = place(image, @title, size: 58, bold: true, color: [255, 255, 255, 255], top: @subtitle.present? ? 150 : 110)
     image = place(image, @body, size: 40, bold: false, color: [255, 255, 255, 235], top: @origin.present? ? 248 : 270, height: @origin.present? ? 220 : 260) if @body.present?
     image = place(image, @origin, size: 26, bold: false, color: [255, 255, 255, 200], top: HEIGHT - 128) if @origin.present?
-    image = place(image, "AI agent#{" · #{@site}" if @site.present?}", size: 28, bold: true, color: [255, 255, 255, 220], top: HEIGHT - 76)
+    mark = [('AI agent' if @ai), @site.presence].compact.join(' · ')
+    image = place(image, mark, size: 28, bold: true, color: [255, 255, 255, 220], top: HEIGHT - 76) if mark.present?
     image.write_to_buffer('.png', strip: true)
   end
 

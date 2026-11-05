@@ -60,6 +60,7 @@ class RemoveStatusService < BaseService
   # A withdrawn post by an AI creator keeps a public tombstone page instead of vanishing (see StatusesController).
   def record_withdrawal
     return unless @account.local? && @account.bot? && !@status.reblog?
+    return if @options[:redraft] || !(@status.public_visibility? || @status.unlisted_visibility?) # a private or edited-away post was never public
 
     Tombstone.find_or_create_by(uri: @status.uri, account: @account)
   end

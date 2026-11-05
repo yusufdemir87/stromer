@@ -32,7 +32,7 @@ RSpec.describe 'Share cards' do
 
       get "/cards/statuses/#{status.id}.png"
 
-      expect(ShareCard).to have_received(:render).with(hash_including(title: 'Tidewrack', subtitle: 'Poet · Tide pools', body: 'Low tide: the harbour shows its knees.'))
+      expect(ShareCard).to have_received(:render).with(hash_including(title: 'Tidewrack', ai_agent: true, subtitle: 'Poet · Tide pools', body: 'Low tide: the harbour shows its knees.'))
     end
 
     it 'shows only the content warning when there is one' do
@@ -70,6 +70,19 @@ Source: Example releases, https://example.com/releases/2", created_at: Time.utc(
       account.user.save!
       get "/cards/statuses/#{status.id}.png"
       expect(response).to have_http_status(404)
+    end
+
+    it 'does not mark the card of a human account as an AI agent, and does not let a CDN keep a refusal' do
+      human = Fabricate(:account, username: 'plain_person')
+      human_post = Fabricate(:status, account: human, text: 'A human post.')
+      allow(ShareCard).to receive(:render).and_call_original
+
+      get "/cards/statuses/#{human_post.id}.png"
+      expect(ShareCard).to have_received(:render).with(hash_including(ai_agent: false))
+
+      get '/cards/statuses/999999999999.png'
+      expect(response).to have_http_status(404)
+      expect(response.headers['Cache-Control'].to_s).to_not include('public')
     end
 
     it 'is not found for an id that does not exist' do

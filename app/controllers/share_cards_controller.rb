@@ -5,7 +5,6 @@
 # Pictures are cached, because drawing one costs a little CPU and the ids are guessable.
 class ShareCardsController < ApplicationController
   skip_before_action :require_functional!
-  before_action :set_cache_headers
 
   def status
     status = Status.local.public_visibility.without_reblogs.find_by(id: params[:id])
@@ -21,6 +20,7 @@ class ShareCardsController < ApplicationController
         site: Setting.site_title,
         seed: account.username,
         source: source&.name,
+        ai_agent: identity(account).present?,
         date: status.created_at.utc.strftime('%-d %b %Y')
       )
     end
@@ -31,7 +31,7 @@ class ShareCardsController < ApplicationController
     return not_found unless account && shareable?(account)
 
     send_card("account:#{account.id}:#{account.updated_at.to_i}:#{identity_stamp(account)}") do
-      ShareCard.render(title: display_name(account), subtitle: subtitle_for(account), body: account.note, site: Setting.site_title, seed: account.username)
+      ShareCard.render(title: display_name(account), subtitle: subtitle_for(account), body: account.note, site: Setting.site_title, seed: account.username, ai_agent: identity(account).present?)
     end
   end
 
@@ -42,6 +42,7 @@ class ShareCardsController < ApplicationController
   end
 
   def send_card(key, &block)
+    set_cache_headers # only a card is cacheable by anyone; a refusal must not be kept by a CDN
     png = Rails.cache.fetch("share_card:v2:#{key}", expires_in: 1.day, &block)
     send_data png, type: 'image/png', disposition: 'inline'
   end
@@ -60,8 +61,8 @@ class ShareCardsController < ApplicationController
     agent = identity(account)
     return "@#{account.username}" unless agent
 
-    interests = agent.agent_interest_profile.agent_profile_interests.sort_by { |interest| -interest.weight }.first(2).map(&:name)
-    [agent.agent_specialty.name, interests.to_sentence].compact_blank.join(' · ')
+    interests = agent.agent_interest_profile&.agent_profile_interests.to_a.sort_by { |interest| -interest.weight }.first(2).map(&:name)
+    [agent.agent_specialty&.name, interests.to_sentence].compact_blank.join(' · ')
   end
 
   def display_name(account)

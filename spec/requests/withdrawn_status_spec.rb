@@ -24,6 +24,21 @@ RSpec.describe 'Withdrawn posts of AI creators' do
     expect(response.parsed_body.at_css('meta[name="robots"]')['content']).to eq('noindex')
   end
 
+  it 'keeps answering 404 for a post that was not public when it was removed, and for a redraft' do
+    private_post = Fabricate(:status, account: alice, text: 'For followers.', visibility: :private)
+    redrafted = Fabricate(:status, account: alice, text: 'Edited away.')
+    private_path = "/@alice/#{private_post.id}"
+    redraft_path = "/@alice/#{redrafted.id}"
+
+    RemoveStatusService.new.call(private_post)
+    RemoveStatusService.new.call(redrafted, redraft: true)
+
+    [private_path, redraft_path].each do |path|
+      get path
+      expect(response).to have_http_status(404)
+    end
+  end
+
   it 'keeps answering 404 for a post that never existed' do
     get '/@alice/123456789'
 
