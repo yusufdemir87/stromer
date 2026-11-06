@@ -1,0 +1,81 @@
+// "Aurora" effects: gradients, glass surfaces, shadows and motion.
+// These are additive tokens; nothing in the existing palette or semantic
+// colour tokens is changed by this file.
+
+// Scheme-independent: the signature gradient stops, motion timing.
+@mixin aurora {
+  --aurora-1: #6d5ae6; // indigo
+  --aurora-2: #a35cf0; // violet
+  --aurora-3: #ee82d8; // pink
+  --aurora-4: #4fd1e8; // cyan
+  --gradient-aurora: linear-gradient(
+    120deg,
+    var(--aurora-1) 0%,
+    var(--aurora-2) 35%,
+    var(--aurora-3) 70%,
+    var(--aurora-4) 100%
+  );
+  --gradient-aurora-soft: linear-gradient(
+    120deg,
+    color-mix(in srgb, var(--aurora-1) 22%, transparent),
+    color-mix(in srgb, var(--aurora-3) 18%, transparent) 60%,
+    color-mix(in srgb, var(--aurora-4) 18%, transparent)
+  );
+  --gradient-mesh:
+    radial-gradient(
+      60% 50% at 12% 8%,
+      color-mix(in srgb, var(--aurora-1) 38%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      50% 45% at 88% 12%,
+      color-mix(in srgb, var(--aurora-3) 30%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      55% 50% at 70% 95%,
+      color-mix(in srgb, var(--aurora-4) 26%, transparent),
+      transparent 70%
+    );
+  --motion-fast: 120ms;
+  --motion-base: 220ms;
+  --motion-slow: 480ms;
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --blur-glass: 14px;
+
+  @media (prefers-reduced-motion: reduce) {
+    --motion-fast: 0ms;
+    --motion-base: 0ms;
+    --motion-slow: 0ms;
+  }
+}
+
+@mixin dark-effects {
+  --glass-bg: color-mix(in srgb, var(--color-white) 6%, transparent);
+  --glass-bg-strong: color-mix(in srgb, var(--color-white) 10%, transparent);
+  --glass-border: color-mix(in srgb, var(--color-white) 14%, transparent);
+  --shadow-1: 0 1px 2px rgb(0 0 0 / 30%);
+  --shadow-2: 0 4px 14px rgb(0 0 0 / 35%);
+  --shadow-3: 0 12px 32px rgb(0 0 0 / 40%);
+  --shadow-4: 0 24px 64px rgb(0 0 0 / 50%);
+  --shadow-glow:
+    0 0 0 1px var(--glass-border),
+    0 8px 40px color-mix(in srgb, var(--aurora-2) 28%, transparent);
+  --focus-ring: 0 0 0 3px color-mix(in srgb, var(--aurora-4) 70%, transparent);
+}
+
+@mixin light-effects {
+  --glass-bg: color-mix(in srgb, var(--color-white) 72%, transparent);
+  --glass-bg-strong: color-mix(in srgb, var(--color-white) 88%, transparent);
+  --glass-border: color-mix(in srgb, var(--color-indigo-600) 16%, transparent);
+  --shadow-1: 0 1px 2px rgb(38 30 70 / 8%);
+  --shadow-2: 0 4px 14px rgb(38 30 70 / 10%);
+  --shadow-3: 0 12px 32px rgb(38 30 70 / 14%);
+  --shadow-4: 0 24px 64px rgb(38 30 70 / 18%);
+  --shadow-glow:
+    0 0 0 1px var(--glass-border),
+    0 8px 40px color-mix(in srgb, var(--aurora-2) 22%, transparent);
+  --focus-ring: 0 0 0 3px
+    color-mix(in srgb, var(--color-indigo-600) 65%, transparent);
+}

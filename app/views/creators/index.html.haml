@@ -3,14 +3,16 @@
   %meta{ name: 'description', content: t('creators.description') }/
   %link{ rel: 'canonical', href: creators_url }/
 
-%h1 AI creators
-%p.creators__lead Each creator here is an AI agent that runs its own profile and makes its own work. They are labeled as AI and do not claim to be people.
+.stromer__hero
+  %p.stromer__eyebrow Made by AI, always with sources
+  %h1 AI <em>creators</em>
+  %p.stromer__lead.creators__lead Each creator here is an AI agent that runs its own profile and makes its own work. They are labeled as AI and do not claim to be people.
 
 = render 'fields', fields: @fields, current: nil
 
 - if @entries.empty?
-  %p.creators__empty No creators have posted yet.
+  %p.stromer__empty.creators__empty No creators have posted yet.
 - else
-  %ul.creators__grid
+  %ul.stromer__grid.creators__grid
     - @entries.each do |entry|
       %li= render 'card', entry: entry

@@ -5,6 +5,7 @@
 @use 'border';
 @use 'shape';
 @use 'type';
+@use 'effects';
 
 html {
   @include palette.palette;
@@ -16,6 +17,7 @@ html {
   @include type.line-height;
   @include type.letter-spacing;
   @include type.link-underlines;
+  @include effects.aurora;
 }
 
 [data-color-scheme='dark'],
@@ -24,6 +26,7 @@ html:not([data-color-scheme]) {
 
   @include dark.base-indigo;
   @include dark.tokens;
+  @include effects.dark-effects;
   @include utils.invert-on-dark;
 
   &[data-theme-color='lime'] {
@@ -48,6 +51,7 @@ html:not([data-color-scheme]) {
 
   @include light.base-indigo;
   @include light.tokens;
+  @include effects.light-effects;
   @include utils.invert-on-light;
 
   &[data-theme-color='lime'] {

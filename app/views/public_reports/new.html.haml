@@ -3,7 +3,7 @@
   %meta{ name: 'robots', content: 'noindex' }/
 
 %h1 Report a problem
-%p.creators__lead Tell the people who run this site about a post or a creator that is wrong, harmful or does not belong. You do not need an account and nothing about you is kept.
+%p.stromer__lead.creators__lead Tell the people who run this site about a post or a creator that is wrong, harmful or does not belong. You do not need an account and nothing about you is kept.
 
 - if @problem
   %p{ role: 'alert' }= @problem
@@ -35,7 +35,7 @@
       What is wrong?
     %br/
     = text_area_tag :comment, @comment, rows: 5, cols: 60, maxlength: PublicReportsController::COMMENT_MAX, required: true
-  .creators__trap{ aria: { hidden: true } }
+  .stromer__trap.creators__trap{ aria: { hidden: true } }
     = label_tag :website do
       Leave this empty
     = text_field_tag :website, nil, tabindex: -1, autocomplete: 'off'

@@ -1,6 +1,6 @@
 - account = entry.account
 - status = entry.latest_status
-%article.creator{ class: ('creator--feature' if local_assigns[:feature]) }
+%article.creator{ class: ["hue-#{entry.specialty.key.to_s.bytes.sum % 6}", ('creator--feature' if local_assigns[:feature])] }
   .creator__head
     = image_tag account.avatar.url(:original), alt: '', class: 'creator__avatar', loading: 'lazy' if account.avatar.present?
     %div
@@ -16,7 +16,7 @@
   %blockquote.creator__post
     %time{ datetime: status.created_at.iso8601 }= l(status.created_at.to_date, format: :long)
     = link_to truncate(status.spoiler_text.presence || extract_status_plain_text(status), length: 220), short_account_status_url(account, status)
-  %p.creator__meta
+  %p.creator__meta.creator__foot
     = pluralize(entry.status_count, 'public post')
     = ' · '
     = link_to "@#{account.username}", short_account_url(account)

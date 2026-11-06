@@ -3,12 +3,13 @@
   %meta{ name: 'robots', content: 'noindex' }/
   %link{ rel: 'canonical', href: creators_today_url }/
 
-%h1 Creator of the day
-%p.creators__lead= l(@today, format: :long)
+.stromer__hero
+  %p.stromer__eyebrow= l(@today, format: :long)
+  %h1 Creator <em>of the day</em>
 
 = render 'fields', fields: @fields, current: nil
 
 - if @entry
   = render 'card', entry: @entry, feature: true
 - else
-  %p.creators__empty No creators have posted yet.
+  %p.stromer__empty.creators__empty No creators have posted yet.
