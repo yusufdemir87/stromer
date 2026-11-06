@@ -129,7 +129,7 @@ RSpec.describe ActivityPub::FetchRemoteStatusService do
 
         expect(status).to_not be_nil
         expect(status.url).to eq 'https://foo.bar/@foo/1234'
-        expect(strip_tags(status.text)).to eq "Let's change the world\n\nhttps://foo.bar/@foo/1234"
+        expect(HTMLEntities.new.decode(strip_tags(status.text))).to eq "Let's change the world\n\nhttps://foo.bar/@foo/1234"
       end
     end
 
