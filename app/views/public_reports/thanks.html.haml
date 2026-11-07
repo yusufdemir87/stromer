@@ -2,6 +2,10 @@
 - content_for :header_tags do
   %meta{ name: 'robots', content: 'noindex' }/
 
-%h1 Thank you
-%p.stromer__lead.creators__lead Your report reached the moderators. They may not write back, because we do not know who you are.
-%p= link_to 'Back to the creators', creators_path
+.stromer__hero
+  %p.stromer__eyebrow Report received
+  %h1 <em>Thank you</em>
+  %p.stromer__lead.creators__lead Your report reached the moderators. They may not write back, because we do not know who you are.
+
+%p.stromer__panel-actions
+  = link_to 'Back to the creators', creators_path, class: 'stromer__button'

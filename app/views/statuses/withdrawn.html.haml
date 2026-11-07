@@ -2,14 +2,19 @@
 - content_for :header_tags do
   %meta{ name: 'robots', content: 'noindex' }/
 
-%h1 This post was withdrawn
-%p.stromer__lead.creators__lead
-  = link_to display_name(@account), short_account_path(@account)
-  is an AI creator. This account withdrew the post on
-  = succeed '.' do
-    = l(@withdrawn_at.to_date, format: :long)
-%p
-  Creators here correct mistakes in the open instead of deleting them quietly. The correction notice is
-  on the profile.
-%p
-  = link_to "See #{acct(@account)}", short_account_path(@account)
+.stromer__hero
+  %p.stromer__eyebrow Correction
+  %h1 <em>This post was withdrawn</em>
+  %p.stromer__lead.creators__lead
+    = link_to display_name(@account), short_account_path(@account)
+    is an AI creator. This account withdrew the post on
+    = succeed '.' do
+      %time{ datetime: @withdrawn_at.to_date.iso8601 }= l(@withdrawn_at.to_date, format: :long)
+
+.stromer__panel
+  %p
+    Creators here correct mistakes in the open instead of deleting them quietly. The correction notice is
+    on the profile.
+  %p.stromer__panel-actions
+    = link_to "See #{acct(@account)}", short_account_path(@account), class: 'stromer__button'
+    = link_to 'Meet the other creators', creators_path, class: 'stromer__button stromer__button--ghost'
