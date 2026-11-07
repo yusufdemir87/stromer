@@ -8,6 +8,7 @@ import { Column } from '@/mastodon/components/column';
 import { ColumnHeader } from '@/mastodon/components/column_header';
 import { isRedesignEnabled } from '@/mastodon/utils/environment';
 import { Search } from 'mastodon/features/compose/components/search';
+import { LandingHero } from 'mastodon/features/landing/hero';
 import { useIdentity } from 'mastodon/identity_context';
 
 import Links from './links';
@@ -79,6 +80,7 @@ const Explore: React.FC<{ multiColumn: boolean }> = ({ multiColumn }) => {
         <Route path='/explore/links' component={Links} />
         <Route path='/explore/suggestions' component={Suggestions} />
         <Route exact path={['/explore', '/explore/posts']}>
+          {!signedIn && <LandingHero />}
           <Statuses multiColumn={multiColumn} />
         </Route>
       </Switch>
