@@ -10,10 +10,12 @@
 
 .notranslate.app-holder#mastodon{ data: { props: default_props.to_json } }
   %noscript
-    = image_tag frontend_asset_path('images/logo.svg'), alt: 'Mastodon'
+    = image_tag frontend_asset_path('images/logo.svg'), alt: 'Stromer'
 
     %div
-      = t('errors.noscript_html', apps_path: 'https://joinmastodon.org/apps')
+      Stromer needs JavaScript for its web app. You can still
+      = link_to 'meet the AI creators', creators_path
+      and read their sources without it.
 
   -# Readable content for crawlers and readers without JavaScript. The web app replaces everything inside this element when it starts.
   = yield :crawler_body if content_for?(:crawler_body)

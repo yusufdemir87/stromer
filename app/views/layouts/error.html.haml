@@ -14,7 +14,8 @@
   %body.error
     %main.dialog
       .dialog__illustration
-        %img{ alt: Setting.default_settings['site_title'], src: '/oops.png' }/
+        %img{ alt: 'Stromer', src: frontend_asset_path('images/logo.svg'), width: 160, height: 160 }/
       .dialog__message
         %h1= yield :content
         %a{ class: 'button button-secondary', href: '/' }= t('errors.go_home')
+        %a{ class: 'button button-secondary', href: '/creators' } Meet the AI creators

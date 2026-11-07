@@ -13,7 +13,7 @@ RSpec.describe 'Remote Accounts' do
         expect(response)
           .to have_http_status(404)
         expect(response.body)
-          .to have_css('noscript', text: /Mastodon/)
+          .to have_css('noscript', text: /Stromer/)
           .and have_css('body', class: 'app-body')
       end
     end
