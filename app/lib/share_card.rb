@@ -15,6 +15,8 @@ class ShareCard
   SUBTITLE_MAX = 80
   BODY_MAX = 260
   SOURCE_MAX = 70
+  AURORA = [[109, 90, 230], [163, 92, 240], [238, 130, 216], [79, 209, 232]].freeze
+  BAR_HEIGHT = 10
 
   def self.render(title:, subtitle: nil, body: nil, site: nil, seed: title, source: nil, date: nil, ai_agent: true)
     new(title: title, subtitle: subtitle, body: body, site: site, seed: seed, source: source, date: date, ai_agent: ai_agent).png
@@ -64,11 +66,46 @@ class ShareCard
 
   private
 
+  # The seed's dark gradient, three soft aurora glows in the corners, and a thin aurora bar on top.
+  # Glows stay faint where the text sits, so white text keeps its contrast.
   def background
+    image = base_gradient
+    image = glow(image, AURORA[0], left: 80, top: 40, radius: 520, strength: 0.42)
+    image = glow(image, AURORA[2], left: WIDTH - 60, top: 60, radius: 440, strength: 0.34)
+    image = glow(image, AURORA[3], left: WIDTH - 200, top: HEIGHT + 40, radius: 520, strength: 0.30)
+    aurora_bar(image)
+  end
+
+  def base_gradient
     top, bottom = self.class.palette(@seed)
     gradient = (Vips::Image.xyz(1, HEIGHT).extract_band(1) / (HEIGHT - 1.0)).resize(WIDTH.to_f, kernel: :nearest, vscale: 1.0)
     channels = top.zip(bottom).map { |from, to| (gradient * (to - from)) + from }
     channels.first.bandjoin(channels.drop(1)).cast(:uchar).copy(interpretation: :srgb)
+  end
+
+  # A radial falloff of one colour: opaque at the centre, gone at the radius.
+  def glow(image, color, left:, top:, radius:, strength:)
+    coords = Vips::Image.xyz(WIDTH, HEIGHT)
+    dx = coords.extract_band(0) - left
+    dy = coords.extract_band(1) - top
+    falloff = ((((dx * dx) + (dy * dy))**0.5) / radius.to_f).linear(-1, 1)
+    falloff *= ((falloff > 0) / 255.0) # rubocop:disable Style/NumericPredicate -- a Vips comparison, not a Ruby number
+    alpha = (falloff * falloff * strength * 255).cast(:uchar)
+    layer = Vips::Image.black(WIDTH, HEIGHT).new_from_image(color).copy(interpretation: :srgb).bandjoin(alpha)
+    image.composite2(layer, :over)
+  end
+
+  def aurora_bar(image)
+    ramp = Vips::Image.xyz(WIDTH, 1).extract_band(0) / (WIDTH - 1.0) * (AURORA.length - 1)
+    index = (ramp.floor > AURORA.length - 2).ifthenelse(AURORA.length - 2, ramp.floor)
+    blend = ramp - index
+    channels = (0..2).map do |band|
+      from = index.case(AURORA.first(AURORA.length - 1).map { |c| c[band] })
+      to = index.case(AURORA.drop(1).map { |c| c[band] })
+      from + ((to - from) * blend)
+    end
+    strip = channels.first.bandjoin(channels.drop(1)).cast(:uchar).copy(interpretation: :srgb).embed(0, 0, WIDTH, BAR_HEIGHT, extend: :copy)
+    image.composite2(strip, :over, x: 0, y: 0)
   end
 
   # Black text rendered as an alpha mask, laid over the picture in the chosen colour.

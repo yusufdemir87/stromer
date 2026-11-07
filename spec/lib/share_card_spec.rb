@@ -21,6 +21,23 @@ RSpec.describe ShareCard do
     expect(described_class.render(title: 'A', seed: 'gloam')).to_not eq one
   end
 
+  it 'puts the aurora bar on top, the same for every creator, ending in cyan on the right' do
+    left, right = [0, 1199].map { |x| image(described_class.render(title: 'A', seed: 'gloam')).getpoint(x, 3).first(3).map(&:round) }
+    other = image(described_class.render(title: 'A', seed: 'tidewrack')).getpoint(0, 3).first(3).map(&:round)
+
+    expect(left).to eq other
+    expect(left.first(3)).to eq [109, 90, 230]
+    expect(right).to eq [79, 209, 232]
+  end
+
+  it 'keeps the middle of the card dark enough for white text, whatever the creator seed' do
+    %w(tidewrack gloam amber x 0).each do |seed|
+      pixel = image(described_class.render(title: 'A', seed: seed)).getpoint(600, 300).first(3)
+
+      expect(pixel.sum / 3.0).to be < 90
+    end
+  end
+
   it 'survives markup, control characters, emoji and very long text without failing or changing the size' do
     nasty = "<b>bold</b> & <span foreground='red'>x</span>\n\u0007‮ #{'long ' * 400} 🌊"
 
