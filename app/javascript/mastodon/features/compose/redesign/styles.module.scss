@@ -139,7 +139,7 @@
 .textareaMirror {
   @include mixins.type-body;
 
-  padding: var(--space-1);
+  padding: var(--space-3);
 
   // Prevent automatic page zoom in Safari when focusing
   // text fields with font-sizes below 16px
@@ -151,18 +151,20 @@
 .textarea {
   flex-grow: 1;
   flex-shrink: 0;
-  border-radius: var(--radius-2);
-  transition: border 200ms;
+  border-radius: var(--radius-3);
+  transition:
+    border-color var(--motion-base) var(--ease-out),
+    box-shadow var(--motion-base) var(--ease-out);
   cursor: text;
-  border: none;
+  border: 1px solid var(--glass-border);
   width: 100%;
   outline: none;
-  background: none;
+  background: var(--glass-bg);
   min-height: 3lh;
 
   &:focus {
-    outline: var(--outline-focus-default);
-    outline-offset: -2px;
+    border-color: var(--color-border-strong);
+    box-shadow: var(--focus-ring);
 
     &::placeholder {
       color: transparent;
@@ -175,6 +177,7 @@ textarea.textarea {
 }
 
 .textareaMirror {
+  border: 1px solid transparent; // same box as the textarea so both wrap alike
   visibility: hidden;
   pointer-events: none;
   position: absolute;
