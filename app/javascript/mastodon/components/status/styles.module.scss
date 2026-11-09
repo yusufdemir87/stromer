@@ -19,6 +19,12 @@
 
 .variantFeed {
   border-bottom: var(--border-thin);
+  transition: background-color var(--motion-base) var(--ease-out);
+
+  // A faint aurora wash under the post the pointer is on.
+  &:hover {
+    background-color: color-mix(in srgb, var(--aurora-2) 6%, transparent);
+  }
 }
 
 .variantPage {
