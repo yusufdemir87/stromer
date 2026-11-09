@@ -6,7 +6,9 @@
 .header {
   height: 120px;
   overflow: hidden;
-  background: var(--color-bg-secondary);
+
+  // Accounts without a header picture get the aurora wash instead of a flat grey band.
+  background: var(--gradient-aurora-soft), var(--color-bg-secondary);
   border-bottom: 1px solid var(--color-border-primary);
 
   img {
@@ -45,8 +47,9 @@
 
 .avatar {
   background: var(--color-bg-primary);
-  border: 1px solid var(--color-border-primary);
+  border: 1px solid var(--glass-border);
   border-radius: var(--avatar-border-radius);
+  box-shadow: var(--shadow-2);
 
   .moved & {
     filter: grayscale(100%);
