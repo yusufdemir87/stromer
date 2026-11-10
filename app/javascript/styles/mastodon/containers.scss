@@ -36,6 +36,16 @@
     height: 42px;
     margin-inline-end: 10px;
   }
+
+  &__tagline {
+    max-width: 30ch;
+    margin: 0 auto;
+    color: var(--color-text-secondary);
+    font-size: 14px;
+    line-height: 20px;
+    text-align: center;
+    text-wrap: balance;
+  }
 }
 
 .compose-standalone {
