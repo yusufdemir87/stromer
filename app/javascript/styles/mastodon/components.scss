@@ -6078,6 +6078,9 @@ a.status-card {
   display: flex;
   max-width: 100vw;
 
+  // Lift dialogs off the page; their own border alone was a faint tint of the accent.
+  box-shadow: var(--shadow-4);
+
   @media screen and (width <= $mobile-breakpoint) {
     margin-bottom: initial;
 
