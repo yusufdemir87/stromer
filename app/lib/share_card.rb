@@ -17,6 +17,7 @@ class ShareCard
   SOURCE_MAX = 70
   AURORA = [[109, 90, 230], [163, 92, 240], [238, 130, 216], [79, 209, 232]].freeze
   BAR_HEIGHT = 10
+  BADGE_SIZE = 56
 
   def self.render(title:, subtitle: nil, body: nil, site: nil, seed: title, source: nil, date: nil, ai_agent: true)
     new(title: title, subtitle: subtitle, body: body, site: site, seed: seed, source: source, date: date, ai_agent: ai_agent).png
@@ -33,7 +34,7 @@ class ShareCard
   end
 
   def png
-    image = background
+    image = badge(background)
     image = place(image, @subtitle, size: 30, bold: false, color: [255, 255, 255, 190], top: 96) if @subtitle.present?
     image = place(image, @title, size: 58, bold: true, color: [255, 255, 255, 255], top: @subtitle.present? ? 150 : 110)
     image = place(image, @body, size: 40, bold: false, color: [255, 255, 255, 235], top: @origin.present? ? 248 : 270, height: @origin.present? ? 220 : 260) if @body.present?
@@ -93,6 +94,47 @@ class ShareCard
     alpha = (falloff * falloff * strength * 255).cast(:uchar)
     layer = Vips::Image.black(WIDTH, HEIGHT).new_from_image(color).copy(interpretation: :srgb).bandjoin(alpha)
     image.composite2(layer, :over)
+  end
+
+  # The Stromer mark (an aurora-gradient rounded square with an "S") in the top-right corner.
+  def badge(image)
+    tile = aurora_tile(BADGE_SIZE).bandjoin(rounded_coverage(BADGE_SIZE, 17))
+    letter = badge_letter
+    tile = tile.composite2(letter, :over, x: (BADGE_SIZE - letter.width) / 2, y: (BADGE_SIZE - letter.height) / 2)
+    image.composite2(tile, :over, x: WIDTH - MARGIN - BADGE_SIZE, y: 26)
+  end
+
+  def badge_letter
+    mask = Vips::Image.text('S', font: "#{FONT} Bold 36", rgba: false, dpi: 72)
+    Vips::Image.black(mask.width, mask.height).new_from_image([255, 255, 255]).copy(interpretation: :srgb).bandjoin(mask)
+  end
+
+  # A diagonal blend of the four aurora colours.
+  def aurora_tile(size)
+    coords = Vips::Image.xyz(size, size)
+    ramp = ((coords.extract_band(0) + coords.extract_band(1)) / (2.0 * (size - 1))) * (AURORA.length - 1)
+    index = (ramp.floor > AURORA.length - 2).ifthenelse(AURORA.length - 2, ramp.floor)
+    blend = ramp - index
+    channels = (0..2).map do |band|
+      from = index.case(AURORA.first(AURORA.length - 1).map { |colour| colour[band] })
+      to = index.case(AURORA.drop(1).map { |colour| colour[band] })
+      from + ((to - from) * blend)
+    end
+    channels.first.bandjoin(channels.drop(1)).cast(:uchar).copy(interpretation: :srgb)
+  end
+
+  # Anti-aliased coverage (0..255) of a rounded square. The comparisons are Vips images, not Ruby numbers.
+  def rounded_coverage(size, radius)
+    coords = Vips::Image.xyz(size, size)
+    half = size / 2.0
+    over_x = ((coords.extract_band(0) - half + 0.5).abs - (half - radius))
+    over_y = ((coords.extract_band(1) - half + 0.5).abs - (half - radius))
+    over_x = (over_x > 0).ifthenelse(over_x, 0) # rubocop:disable Style/NumericPredicate
+    over_y = (over_y > 0).ifthenelse(over_y, 0) # rubocop:disable Style/NumericPredicate
+    cover = (((((over_x * over_x) + (over_y * over_y))**0.5) - radius) * -1) + 0.5
+    cover = (cover > 0).ifthenelse(cover, 0) # rubocop:disable Style/NumericPredicate
+    cover = (cover > 1).ifthenelse(1, cover)
+    (cover * 255).cast(:uchar)
   end
 
   def aurora_bar(image)

@@ -30,6 +30,15 @@ RSpec.describe ShareCard do
     expect(right).to eq [79, 209, 232]
   end
 
+  it 'draws the Stromer badge in the top-right corner, in colours much brighter than the dark card around it' do
+    picture = image(described_class.render(title: 'A', seed: 'gloam'))
+    badge = picture.getpoint(1080, 36).first(3)
+    around = picture.getpoint(900, 36).first(3)
+
+    expect(badge.sum / 3.0).to be > 100
+    expect(around.sum / 3.0).to be < 90
+  end
+
   it 'keeps the middle of the card dark enough for white text, whatever the creator seed' do
     %w(tidewrack gloam amber x 0).each do |seed|
       pixel = image(described_class.render(title: 'A', seed: seed)).getpoint(600, 300).first(3)
