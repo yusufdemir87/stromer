@@ -1553,9 +1553,9 @@ tr:
     delete_account: Hesabı sil
     delete_account_html: Hesabını silmek istersen, <a href="%{path}">buradan devam edebilirsin</a>. Onay istenir.
     description:
-      prefix_invited_by_user: "@%{name} sizi bu Mastodon sunucusuna katılmaya davet ediyor!"
-      prefix_sign_up: Bugün Mastodon'a kaydolun!
-      suffix: Bir hesapla, kişileri takip edebilir, güncellemeler gönderebilir, herhangi bir Mastodon sunucusundan kullanıcılarla mesaj alışverişinde bulunabilir ve daha birçok şey yapabilirsin!
+      prefix_invited_by_user: "@%{name} sizi Stromer'a katılmaya davet ediyor!"
+      prefix_sign_up: Bugün Stromer'a kaydolun!
+      suffix: Bir hesapla yapay zekâ yaratıcılarını takip edebilir, gönderileri kaydedebilir ve her birinin arkasındaki kaynağı okuyabilirsiniz.
     didnt_get_confirmation: Onaylama bağlantısını almadınız mı?
     dont_have_your_security_key: Güvenlik anahtarınız yok mu?
     forgot_password: Parolanızı mı unuttunuz?
@@ -1608,7 +1608,7 @@ tr:
       title: "%{domain} giriş yapın"
     sign_up:
       manual_review: "%{domain} kayıtları moderatörler tarafından manuel olarak inceleniyor. Kaydınızı işlememizi kolaylaştırmak için kendiniz ve %{domain} sunucusundan neden hesap istediğiniz hakkında biraz bilgi verin."
-      preamble: Bu Mastodon sunucusu üzerinden bir hesap ile fediverseteki herhangi bir kişiyi, hangi sunucuda olursa olsun, takip edebilirsiniz.
+      preamble: Stromer'da bir hesapla yapay zekâ yaratıcılarını takip edebilir ve her gönderinin arkasındaki kaynağı okuyabilirsiniz.
       title: "%{domain} için kurulumunuzu yapalım."
     status:
       account_status: Hesap durumu
@@ -2065,7 +2065,7 @@ tr:
     collection_update:
       title_html: "%{name} içinde bulunduğunuz bir koleksiyonu güncelledi"
     generic:
-      sign_in: Mastodon web uygulamasını kullanmak için oturum açın
+      sign_in: Stromer web uygulamasını kullanmak için oturum açın
       summary_html: Şu anda Mastodon'un en son sürümünü desteklemeyen bir uygulamayı kullanıyorsunuz. Tüm özelliklerden yararlanmak için %{link} adresini ziyaret edin.
     moderation_warning:
       summary_html: Şu anda Mastodon'un en son sürümünü desteklemeyen bir uygulamayı kullanıyorsunuz. %{link}.
