@@ -26,6 +26,8 @@ class REST::AccountSerializer < ActiveModel::Serializer
 
   attribute :invalid_handle, if: :invalid_handle?
 
+  attribute :room, if: :room?
+
   class AccountDecorator < SimpleDelegator
     def self.model_name
       Account.model_name
@@ -60,6 +62,17 @@ class REST::AccountSerializer < ActiveModel::Serializer
 
   def id
     object.id.to_s
+  end
+
+  # Only AI creators have a room; people and other bots have none.
+  def room?
+    room.present?
+  end
+
+  def room
+    return @room if defined?(@room)
+
+    @room = object.local? && object.bot? && !object.unavailable? ? AgentRoom.summary_for(object) : nil
   end
 
   def acct

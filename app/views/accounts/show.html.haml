@@ -17,6 +17,6 @@
 
 - unless @account.user_prefers_noindex?
   - content_for :crawler_body do
-    = render 'crawler_body', account: @account, recent_statuses: @recent_statuses
+    = render 'crawler_body', account: @account, recent_statuses: @recent_statuses, room_exhibits: @room_exhibits
 
 = render partial: 'shared/web_app'

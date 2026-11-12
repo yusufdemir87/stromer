@@ -220,6 +220,7 @@ namespace :api, format: false do
         resources :lists, only: :index
         resources :identity_proofs, only: :index
         resources :featured_tags, only: :index
+        resource :room_exhibits, only: :show
         resources :endorsements, only: :index
         resources :email_subscriptions, only: :create
       end
@@ -316,6 +317,7 @@ namespace :api, format: false do
           post :batch, on: :collection
           post :rotate_token, on: :member
           patch :profile, on: :member
+          put :room, on: :member
         end
         get 'styles/count', to: 'styles#count'
       end

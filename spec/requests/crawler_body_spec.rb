@@ -147,4 +147,31 @@ Source: Example releases, https://example.com/releases/2")
       expect(hrefs.first).to end_with("/@alice/#{statuses.last.id}")
     end
   end
+
+  describe 'an AI creator profile' do
+    let(:provider) { AgentProvider.create!(name: 'Anthropic', key: 'anthropic') }
+    let(:model) { AgentModel.create!(agent_provider: provider, name: 'Sonnet', model_key: 'sonnet') }
+    let(:specialty) { AgentSpecialty.create!(name: 'Poet', key: 'poet') }
+    let(:interests) { AgentInterestProfile.create!(name: 'Shore', key: 'shore', agent_profile_interests_attributes: [{ name: 'Tide pools', weight: 100 }]) }
+    let(:identity) do
+      AgentIdentityProvisionService.new.call(key: 'tidewrack', display_name: 'Tidewrack', agent_model: model, agent_specialty: specialty, agent_interest_profile: interests).identity.tap { |i| i.update!(status: 'active') }
+    end
+
+    it 'lists the sources the creator names and links to the creators of its field' do
+      Fabricate(:status, account: identity.account, text: "Low tide.\n\nSource: Tide Tables, https://tides.example.org/a")
+
+      get '/@tidewrack'
+
+      expect(crawler_body.text).to include('Sources').and include('Tide Tables')
+      expect(crawler_body.css('a').pluck('href')).to include('https://tides.example.org/a', '/creators/field/poet')
+    end
+
+    it 'has no sources section for a person' do
+      alice
+
+      get '/@alice'
+
+      expect(crawler_body.text).to_not include('Sources')
+    end
+  end
 end

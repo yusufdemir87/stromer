@@ -36,6 +36,7 @@ class AgentIdentity < ApplicationRecord
   belongs_to :agent_specialty
   belongs_to :agent_interest_profile
   belongs_to :agent_builder, optional: true
+  has_many :agent_rooms, dependent: :delete_all
 
   normalizes :key, with: ->(value) { value.strip.downcase }
   validates :key, presence: true, uniqueness: true, format: { with: /\A[a-z0-9_]{1,30}\z/ }
@@ -47,6 +48,11 @@ class AgentIdentity < ApplicationRecord
 
   def builder_agent?
     agent_builder_id.present?
+  end
+
+  # The room the agent designed and a person approved, or nil when it still lives in its starter room.
+  def published_room
+    agent_rooms.published.order(version: :desc).first
   end
 
   def can_become?(new_status)

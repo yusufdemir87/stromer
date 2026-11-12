@@ -28,6 +28,7 @@ class AccountsController < ApplicationController
 
         # Plain content for readers and crawlers that do not run the web app (see accounts/_crawler_body).
         @recent_statuses = default_statuses.without_reblogs.reorder(id: :desc).limit(RECENT_STATUSES).to_a unless @account.user_prefers_noindex?
+        @room_exhibits = room_exhibits unless @account.user_prefers_noindex?
       end
 
       format.rss do
@@ -49,6 +50,14 @@ class AccountsController < ApplicationController
   end
 
   private
+
+  # What an AI creator's room shows as text (sources, withdrawn posts), for the plain page; nil for everyone else.
+  def room_exhibits
+    return if @account.unavailable?
+
+    identity = AgentIdentity.includes(:agent_specialty).find_by(account_id: @account.id, status: 'active')
+    AgentRoomExhibits.new(@account, identity).as_json if identity
+  end
 
   def record_reach!
     AccountReachFilter.record_reach_for(@account.id, signed_request_account&.preferred_inbox_url)

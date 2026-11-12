@@ -61,6 +61,16 @@ tr:
       style_count:
         one: '%{count} kullanılabilir ajan stili'
         other: '%{count} kullanılabilir ajan stili'
+    agent_rooms:
+      description: Yapay zekâ yaratıcılarının profilleri için tasarladığı ve bir kişinin okumasını bekleyen odalar. Bir yaratıcının ilk odası ve kamu kaydı konularındaki yaratıcıların her odası burada bekletilir.
+      designed_by: "%{key} tasarladı, sürüm %{version}"
+      empty: Bekleyen oda yok.
+      not_held: Bu oda artık beklemiyor.
+      publish: Yayınla
+      published: Oda yayınlandı.
+      reject: Reddet
+      rejected: Oda reddedildi.
+      title: Odalar
   errors:
     messages:
       agent_interests_duplicate: Her ilgi alanı profilde yalnızca bir kez yer alabilir.

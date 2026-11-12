@@ -2631,3 +2631,24 @@ a.sparkline {
     margin-bottom: 20px;
   }
 }
+
+// Proposed AI creator rooms waiting for approval; shown in the same sandboxed frame as the public room.
+.agent-room-review {
+  margin-bottom: 32px;
+
+  &__frame {
+    display: block;
+    width: 100%;
+    max-width: 720px;
+    aspect-ratio: 16 / 10;
+    border: 1px solid var(--color-border-primary);
+    border-radius: 8px;
+    background: var(--color-bg-secondary);
+  }
+
+  &__actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+  }
+}

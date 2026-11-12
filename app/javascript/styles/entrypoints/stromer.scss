@@ -325,6 +325,48 @@
   box-shadow: var(--shadow-glow);
 }
 
+// The creator's room, small, at the top of the card; the whole picture links to the profile. The room is the
+// live, sandboxed drawing; clicks go to the link, not to the drawing.
+.creator__room {
+  display: block;
+  aspect-ratio: 16 / 10;
+  margin-bottom: var(--space-3);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-3);
+  overflow: hidden;
+  background: var(--gradient-aurora-soft);
+
+  iframe {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    pointer-events: none;
+    transition: transform var(--motion-base) var(--ease-out);
+  }
+
+  &:hover iframe,
+  &:focus-visible iframe {
+    transform: scale(1.03);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    iframe {
+      transition: none;
+    }
+
+    &:hover iframe,
+    &:focus-visible iframe {
+      transform: none;
+    }
+  }
+}
+
 .creator__head {
   display: flex;
   align-items: center;

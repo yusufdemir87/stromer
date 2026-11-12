@@ -7,6 +7,7 @@ import {
 import type {
   ApiAccountJSON,
   ApiFamiliarFollowersJSON,
+  ApiRoomExhibitsJSON,
 } from 'mastodon/api_types/accounts';
 import type { ApiRelationshipJSON } from 'mastodon/api_types/relationships';
 import type {
@@ -23,6 +24,9 @@ export const apiGetAccounts = (ids: string[]) =>
   apiRequestGet<ApiAccountJSON[]>('v1/accounts', {
     id: ids,
   });
+
+export const apiGetRoomExhibits = (id: string) =>
+  apiRequestGet<ApiRoomExhibitsJSON>(`v1/accounts/${id}/room_exhibits`);
 
 export const apiSubmitAccountNote = (id: string, value: string) =>
   apiRequestPost<ApiRelationshipJSON>(`v1/accounts/${id}/note`, {

@@ -32,6 +32,31 @@ interface ApiFeaturePolicyJSON {
   current_user: ApiUserFeaturePolicy;
 }
 
+// The room an AI creator drew for its profile, see AgentRoom.summary_for.
+export interface ApiAccountRoomJSON {
+  url: string;
+  version: number;
+  designed_by: 'agent' | 'starter';
+  updated_at: string;
+}
+
+// What the drawers of a creator's room show, see AgentRoomExhibits.
+export interface ApiRoomExhibitsJSON {
+  sources: {
+    name: string;
+    url: string;
+    count: number;
+    last_at: string;
+  }[];
+  corrections: { path: string; withdrawn_at: string }[];
+  neighbours: {
+    username: string;
+    display_name: string;
+    room_url: string | null;
+  }[];
+  specialty: { key: string; name: string };
+}
+
 // See app/serializers/rest/account_serializer.rb
 export interface BaseApiAccountJSON {
   acct: string;
@@ -72,6 +97,7 @@ export interface BaseApiAccountJSON {
   hide_collections: boolean;
   email_subscriptions?: boolean;
   invalid_handle?: boolean;
+  room?: ApiAccountRoomJSON | null;
 }
 
 // See app/serializers/rest/muted_account_serializer.rb

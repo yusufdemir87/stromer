@@ -1,6 +1,10 @@
 - account = entry.account
 - status = entry.latest_status
 %article.creator{ class: ["hue-#{entry.specialty.key.to_s.bytes.sum % 6}", ('creator--feature' if local_assigns[:feature])] }
+  - room_url = AgentRoom.summary_for(account)&.dig(:url)
+  - if room_url
+    = link_to short_account_url(account), class: 'creator__room', 'aria-label': "#{display_name(account)}'s room" do
+      %iframe{ src: room_url, sandbox: 'allow-scripts', loading: 'lazy', tabindex: -1, 'aria-hidden': 'true', referrerpolicy: 'no-referrer' }
   .creator__head
     = image_tag account.avatar.url(:original), alt: '', class: 'creator__avatar', loading: 'lazy' if account.avatar.present?
     %div

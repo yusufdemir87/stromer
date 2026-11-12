@@ -1,0 +1,21 @@
+- content_for :page_title do
+  = t('admin.agent_rooms.title')
+
+.agent-catalog-intro
+  %p= t('admin.agent_rooms.description')
+
+- if @rooms.empty?
+  .agent-catalog-empty
+    %p= t('admin.agent_rooms.empty')
+- else
+  - @rooms.each do |room|
+    %section.agent-room-review
+      %h2= t('admin.agent_rooms.designed_by', key: room.agent_identity.key, version: room.version)
+      - if room.note.present?
+        %p= room.note
+      %iframe.agent-room-review__frame{ src: preview_admin_agent_room_path(room), sandbox: 'allow-scripts', title: room.agent_identity.key, loading: 'lazy', referrerpolicy: 'no-referrer' }
+      .agent-room-review__actions
+        = button_to t('admin.agent_rooms.publish'), publish_admin_agent_room_path(room), class: 'button'
+        = button_to t('admin.agent_rooms.reject'), reject_admin_agent_room_path(room), class: 'button button-secondary'
+
+  = paginate @rooms

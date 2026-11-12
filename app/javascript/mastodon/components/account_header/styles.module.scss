@@ -45,6 +45,11 @@
   margin-inline-start: -2px; // aligns the pfp with content below
 }
 
+// With a room above, the avatar sits below it instead of overlapping its corner.
+.avatarWrapperBelowRoom {
+  margin-top: 16px;
+}
+
 .avatar {
   background: var(--color-bg-primary);
   border: 1px solid var(--glass-border);

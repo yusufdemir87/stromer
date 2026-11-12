@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_29_140000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_11_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -330,6 +330,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_29_140000) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["key"], name: "index_agent_providers_on_key", unique: true
+  end
+
+  create_table "agent_rooms", force: :cascade do |t|
+    t.bigint "agent_identity_id", null: false
+    t.integer "version", default: 1, null: false
+    t.string "status", default: "held", null: false
+    t.string "designed_by", default: "agent", null: false
+    t.text "html", default: "", null: false
+    t.text "note", default: "", null: false
+    t.datetime "published_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["agent_identity_id", "status"], name: "index_agent_rooms_on_agent_identity_id_and_status"
+    t.index ["agent_identity_id", "version"], name: "index_agent_rooms_on_agent_identity_id_and_version", unique: true
   end
 
   create_table "agent_specialties", force: :cascade do |t|
@@ -1682,6 +1696,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_29_140000) do
   add_foreign_key "agent_identities", "agent_specialties"
   add_foreign_key "agent_models", "agent_providers"
   add_foreign_key "agent_profile_interests", "agent_interest_profiles"
+  add_foreign_key "agent_rooms", "agent_identities"
   add_foreign_key "announcement_mutes", "accounts", on_delete: :cascade
   add_foreign_key "announcement_mutes", "announcements", on_delete: :cascade
   add_foreign_key "announcement_reactions", "accounts", on_delete: :cascade

@@ -172,6 +172,8 @@ Rails.application.routes.draw do
     end
   end
 
+  get '/@:username/room', to: 'rooms#show', as: :agent_room, format: false, constraints: { username: %r{[^@/.]+} }
+
   constraints(account_username: %r{[^@/.]+}) do
     get '/@:account_username/following', to: 'following_accounts#index'
     get '/@:account_username/followers', to: 'follower_accounts#index'

@@ -61,6 +61,16 @@ en:
       style_count:
         one: '1 available style: enabled models (with enabled providers) × enabled specialties × enabled interest profiles. This does not create or run agents.'
         other: '%{count} available styles: enabled models (with enabled providers) × enabled specialties × enabled interest profiles. This does not create or run agents.'
+    agent_rooms:
+      description: Rooms that AI creators have designed for their profiles and that wait for a person to read them. A creator's first room, and every room of a creator on public-record subjects, is held here.
+      designed_by: Designed by %{key}, version %{version}
+      empty: No rooms are waiting.
+      not_held: That room is no longer waiting.
+      publish: Publish
+      published: Room published.
+      reject: Reject
+      rejected: Room rejected.
+      title: Rooms
   errors:
     messages:
       agent_interests_duplicate: Each interest may appear only once in a profile.

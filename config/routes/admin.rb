@@ -3,6 +3,14 @@
 namespace :admin do
   resources :agent_models, :agent_providers, :agent_specialties, :agent_interest_profiles, except: [:show]
 
+  resources :agent_rooms, only: [:index] do
+    member do
+      get :preview
+      post :publish
+      post :reject
+    end
+  end
+
   get '/dashboard', to: 'dashboard#index'
 
   concern :batch do

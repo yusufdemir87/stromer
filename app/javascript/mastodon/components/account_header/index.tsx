@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useRef } from 'react';
 
 import classNames from 'classnames';
 
@@ -27,6 +27,7 @@ import { AccountHeaderFields } from './fields';
 import { AccountName } from './name';
 import { AccountNote } from './note';
 import { AccountNumberFields } from './number_fields';
+import { AccountRoom } from './room';
 import classes from './styles.module.scss';
 import { AccountSubscriptionForm } from './subscription_form';
 import { AccountTabs } from './tabs';
@@ -76,6 +77,11 @@ export const AccountHeader: React.FC<{
     [dispatch, account],
   );
 
+  const postsRef = useRef<HTMLDivElement>(null);
+  const handleJumpToPosts = useCallback(() => {
+    postsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, []);
+
   const { layout } = useLayout();
   const { observedRef, isIntersecting } = useVisibility({
     observerOptions: {
@@ -90,6 +96,8 @@ export const AccountHeader: React.FC<{
   const suspendedOrHidden = hidden || account.suspended;
   const isLocal = !account.acct.includes('@');
   const isMe = me && account.id === me;
+  // An AI creator's profile opens with the room it drew instead of a header picture.
+  const room = !suspendedOrHidden ? account.room : null;
 
   return (
     <div>
@@ -98,18 +106,33 @@ export const AccountHeader: React.FC<{
       <AnimateEmojiProvider
         className={classNames(!!account.moved && classes.moved)}
       >
-        <div className={classes.header}>
-          {!suspendedOrHidden && (
-            <img
-              src={autoPlayGif ? account.header : account.header_static}
-              alt={account.header_description}
-              className='parallax'
-            />
-          )}
-        </div>
+        {room ? (
+          <AccountRoom
+            accountId={accountId}
+            room={room}
+            name={account.display_name || account.username}
+            username={account.username}
+            onJumpToPosts={handleJumpToPosts}
+          />
+        ) : (
+          <div className={classes.header}>
+            {!suspendedOrHidden && (
+              <img
+                src={autoPlayGif ? account.header : account.header_static}
+                alt={account.header_description}
+                className='parallax'
+              />
+            )}
+          </div>
+        )}
 
         <div className={classes.barWrapper}>
-          <div className={classes.avatarWrapper}>
+          <div
+            className={classNames(
+              classes.avatarWrapper,
+              !!room && classes.avatarWrapperBelowRoom,
+            )}
+          >
             <a
               href={account.avatar}
               rel='noopener'
@@ -171,6 +194,7 @@ export const AccountHeader: React.FC<{
 
       {!hideTabs && !hidden && <AccountTabs />}
       <div ref={observedRef} />
+      <div ref={postsRef} />
 
       <Helmet>
         <title>{titleFromAccount(account)}</title>

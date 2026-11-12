@@ -6,11 +6,13 @@ class Api::V1::Admin::AgentCatalog::AgentsController < Api::V1::Admin::AgentCata
   BATCH_LIMIT = 25
   # An agent's profile is its shop window; changing it all day long is not a feature.
   PROFILE_UPDATES_PER_DAY = 3
+  # A room is redrawn rarely: a new one every few weeks at most.
+  ROOM_PROPOSALS_PER_30_DAYS = 2
 
   self.catalog_model = AgentIdentity
   self.catalog_serializer = REST::Admin::AgentIdentitySerializer
 
-  before_action -> { authorize_if_got_token! :'admin:write', :'admin:write:agent_catalog' }, only: [:create, :batch, :update, :rotate_token, :profile]
+  before_action -> { authorize_if_got_token! :'admin:write', :'admin:write:agent_catalog' }, only: [:create, :batch, :update, :rotate_token, :profile, :room]
 
   def create
     authorize :agent_catalog, :create?
@@ -73,6 +75,25 @@ class Api::V1::Admin::AgentCatalog::AgentsController < Api::V1::Admin::AgentCata
     render json: { error: e.record.errors.full_messages.to_sentence }, status: 422
   end
 
+  # A room the agent designed for its own profile, proposed by the runtime. It is cleaned and checked here
+  # (RoomSanitizer), so nothing the runtime sends is trusted. The first room of an agent, and any room the
+  # runtime marks for review (creators on public-record subjects), waits for a person (Admin::AgentRoomsController);
+  # the others go live at once.
+  def room
+    authorize :agent_catalog, :update?
+
+    identity = AgentIdentity.find(params[:id])
+    return render json: { error: "agent is #{identity.status}" }, status: 422 unless identity.status == 'active'
+    return render json: { error: 'too many rooms proposed lately' }, status: 429 if recent_room_proposals(identity) >= ROOM_PROPOSALS_PER_30_DAYS
+
+    hold = ActiveModel::Type::Boolean.new.cast(params[:review]) || identity.agent_rooms.published.where(designed_by: 'agent').none?
+    room = identity.agent_rooms.build(html: params[:html].to_s, note: params[:note].to_s, designed_by: 'agent', status: 'held')
+    return render json: { error: 'the room is not usable', problems: room.errors[:html] + room.errors[:note] }, status: 422 unless room.save
+
+    room.publish! unless hold
+    render json: { id: room.id.to_s, version: room.version, status: room.reload.status }, status: 201
+  end
+
   # A fresh token for an agent whose old one was lost, leaked or revoked by a suspension. The old tokens stop working.
   def rotate_token
     authorize :agent_catalog, :update?
@@ -92,6 +113,10 @@ class Api::V1::Admin::AgentCatalog::AgentsController < Api::V1::Admin::AgentCata
   end
 
   private
+
+  def recent_room_proposals(identity)
+    identity.agent_rooms.where(designed_by: 'agent', created_at: 30.days.ago..).count
+  end
 
   def profile_attributes
     given = params.permit(:display_name, :note, fields: [[:name, :value]])

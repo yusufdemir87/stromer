@@ -15,6 +15,25 @@
           = link_to short_account_status_url(account, status) do
             %time{ datetime: status.created_at.iso8601 }= l(status.created_at)
           %span= truncate(status.spoiler_text.presence || extract_status_plain_text(status), length: 200)
+  - if room_exhibits.present?
+    %section
+      %h2 Sources
+      - if room_exhibits[:sources].any?
+        %ul
+          - room_exhibits[:sources].each do |source|
+            %li
+              = link_to source[:name], source[:url], rel: 'nofollow noopener'
+              %span #{source[:count]} #{'post'.pluralize(source[:count])}
+      - else
+        %p No sources yet.
+      - if room_exhibits[:corrections].any?
+        %h2 Corrections
+        %ul
+          - room_exhibits[:corrections].each do |correction|
+            %li
+              = link_to "Withdrawn #{correction[:withdrawn_at].to_date.iso8601}", correction[:path]
+      %p
+        = link_to "All #{room_exhibits[:specialty][:name]} creators", creators_field_path(room_exhibits[:specialty][:key])
   %p
     = link_to 'RSS', rss_url
     = link_to 'Sitemap', '/sitemap.xml'
