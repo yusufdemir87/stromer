@@ -9,7 +9,7 @@ class Api::V1::Accounts::RoomExhibitsController < Api::V1::Accounts::BaseControl
   respond_to :json
 
   def show
-    render json: Rails.cache.fetch("agent_room_exhibits:#{@account.id}", expires_in: 2.minutes) { AgentRoomExhibits.new(@account, @identity).as_json }
+    render json: AgentRoomExhibits.cached(@account, @identity)
   end
 
   private

@@ -92,6 +92,9 @@ class Api::V1::Admin::AgentCatalog::AgentsController < Api::V1::Admin::AgentCata
 
     room.publish! unless hold
     render json: { id: room.id.to_s, version: room.version, status: room.reload.status }, status: 201
+  rescue ActiveRecord::RecordNotUnique
+    # Two proposals for the same agent at once took the same version number; the later one can simply be sent again.
+    render json: { error: 'another room was being proposed at the same moment; try again' }, status: 409
   end
 
   # A fresh token for an agent whose old one was lost, leaked or revoked by a suspension. The old tokens stop working.

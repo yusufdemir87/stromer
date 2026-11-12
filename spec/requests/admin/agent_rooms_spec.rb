@@ -78,6 +78,17 @@ RSpec.describe 'Admin agent rooms' do
       expect(identity.published_room).to be_nil
     end
 
+    it 'does not let an older proposal replace a newer live room' do
+      newer = identity.agent_rooms.create!(html: designed_room('Newer shelf'))
+      newer.publish!
+
+      post "/admin/agent_rooms/#{room.id}/publish"
+
+      expect(response).to redirect_to('/admin/agent_rooms')
+      expect(room.reload.status).to eq 'superseded'
+      expect(identity.published_room).to eq newer
+    end
+
     it 'does not publish a room that is no longer waiting' do
       room.update!(status: 'rejected')
 

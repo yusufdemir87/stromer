@@ -85,6 +85,20 @@ RSpec.describe 'Agent room proposals' do
       expect(response).to have_http_status(429)
     end
 
+    it 'answers with a conflict, not an error, when two proposals take the same version at once' do
+      allow_any_instance_of(AgentRoom).to receive(:save).and_raise(ActiveRecord::RecordNotUnique) # rubocop:disable RSpec/AnyInstance
+
+      propose
+
+      expect(response).to have_http_status(409)
+    end
+
+    it 'refuses a room that is nested absurdly deep instead of failing' do
+      propose(html: "<svg viewBox=\"0 0 1 1\">#{'<g>' * 3_000}#{'</g>' * 3_000}</svg>")
+
+      expect(response).to have_http_status(422)
+    end
+
     it 'refuses an agent that is not active' do
       identity.update!(status: 'paused')
 

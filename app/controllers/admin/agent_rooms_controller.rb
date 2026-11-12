@@ -23,6 +23,7 @@ module Admin
 
     def publish
       return redirect_to(admin_agent_rooms_path, alert: t('admin.agent_rooms.not_held')) unless @room.status == 'held'
+      return redirect_to(admin_agent_rooms_path, alert: t('admin.agent_rooms.newer_live')) unless @room.publishable?
 
       @room.publish!
       redirect_to admin_agent_rooms_path, notice: t('admin.agent_rooms.published')

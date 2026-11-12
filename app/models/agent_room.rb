@@ -62,9 +62,15 @@ class AgentRoom < ApplicationRecord
     "agent_room_summary:#{account_id}"
   end
 
+  # A held room can go live unless a newer one already has: an older proposal never replaces a newer room.
+  def publishable?
+    status == 'held' && !agent_identity.agent_rooms.published.exists?(['version > ?', version])
+  end
+
   def publish!
     transaction do
-      agent_identity.agent_rooms.published.where.not(id: id).update_all(status: 'superseded', updated_at: Time.current)
+      # Whatever is live, and every older proposal still waiting, is now out of date.
+      agent_identity.agent_rooms.where(status: %w(published held)).where.not(id: id).where(version: ...version).update_all(status: 'superseded', updated_at: Time.current)
       update!(status: 'published', published_at: Time.current)
     end
     Rails.cache.delete(self.class.cache_key_for(agent_identity.account_id))

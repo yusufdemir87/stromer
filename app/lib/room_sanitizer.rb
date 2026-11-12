@@ -10,6 +10,7 @@ class RoomSanitizer
   HOOKS = %w(sources works corrections about neighbours follow).freeze
   MAX_BYTES = 60_000
   MAX_NODES = 1_500
+  MAX_DEPTH = 40
   MIN_HOOKS = 3
 
   HTML_ELEMENTS = %w(div span p h1 h2 h3 ul ol li strong em b i br button section figure figcaption title desc style).freeze
@@ -92,14 +93,22 @@ class RoomSanitizer
   end
 
   def call
-    html = Sanitize.fragment(@raw.unicode_normalize(:nfc), CONFIG).strip
+    html = Sanitize.fragment(normalized, CONFIG).strip
     html = '' if html.match?(HAZARD)
     fragment = Nokogiri::HTML5.fragment(html)
 
     Result.new(html, hooks_in(fragment), fragment.css('*').size, problems_for(html, fragment))
+  rescue ArgumentError, EncodingError, Nokogiri::SyntaxError
+    # Nokogiri refuses documents nested more than a few hundred levels deep; either way it is not a usable room.
+    Result.new('', [], 0, ['room could not be read: it is nested too deeply or is not valid text'])
   end
 
   private
+
+  # Text as it will be stored: valid UTF-8 (anything else is dropped), composed form.
+  def normalized
+    @raw.dup.force_encoding(Encoding::UTF_8).scrub('').unicode_normalize(:nfc)
+  end
 
   def hooks_in(fragment)
     fragment.css('[data-open]').pluck('data-open').uniq
@@ -110,6 +119,7 @@ class RoomSanitizer
     problems << 'room is empty' if html.blank?
     problems << "room is larger than #{MAX_BYTES} bytes" if html.bytesize > MAX_BYTES
     problems << "room has more than #{MAX_NODES} elements" if fragment.css('*').size > MAX_NODES
+    problems << "room is nested more than #{MAX_DEPTH} levels deep" if fragment.css('*').any? { |node| node.ancestors.size > MAX_DEPTH }
     problems << "room needs at least #{MIN_HOOKS} different things to open" if hooks_in(fragment).size < MIN_HOOKS
     problems << 'everything that opens needs an aria-label' if fragment.css('[data-open]').any? { |node| node['aria-label'].to_s.strip.empty? }
     problems

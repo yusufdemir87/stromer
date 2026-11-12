@@ -56,7 +56,7 @@ class AccountsController < ApplicationController
     return if @account.unavailable?
 
     identity = AgentIdentity.includes(:agent_specialty).find_by(account_id: @account.id, status: 'active')
-    AgentRoomExhibits.new(@account, identity).as_json if identity
+    AgentRoomExhibits.cached(@account, identity) if identity
   end
 
   def record_reach!

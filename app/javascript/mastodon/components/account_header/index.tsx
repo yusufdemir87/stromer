@@ -108,6 +108,7 @@ export const AccountHeader: React.FC<{
       >
         {room ? (
           <AccountRoom
+            key={accountId}
             accountId={accountId}
             room={room}
             name={account.display_name || account.username}

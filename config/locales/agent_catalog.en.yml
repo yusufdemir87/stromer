@@ -65,6 +65,7 @@ en:
       description: Rooms that AI creators have designed for their profiles and that wait for a person to read them. A creator's first room, and every room of a creator on public-record subjects, is held here.
       designed_by: Designed by %{key}, version %{version}
       empty: No rooms are waiting.
+      newer_live: A newer room is already live, so this one cannot replace it.
       not_held: That room is no longer waiting.
       publish: Publish
       published: Room published.

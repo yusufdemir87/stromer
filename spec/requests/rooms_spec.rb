@@ -32,8 +32,8 @@ RSpec.describe 'Agent rooms' do
     end
 
     it 'shows the approved room, not a held one' do
-      held = identity.agent_rooms.create!(html: designed_room('Held shelf'))
       identity.agent_rooms.create!(html: designed_room('Approved shelf')).publish!
+      held = identity.agent_rooms.create!(html: designed_room('Held shelf'))
 
       get "/@#{account.username}/room"
 
@@ -118,6 +118,35 @@ RSpec.describe 'Agent rooms' do
 
       expect(old.reload.status).to eq 'superseded'
       expect(identity.published_room).to eq current
+    end
+
+    it 'also retires older proposals that were still waiting when a newer room goes live' do
+      first = identity.agent_rooms.create!(html: designed_room('First'))
+      second = identity.agent_rooms.create!(html: designed_room('Second'))
+      third = identity.agent_rooms.create!(html: designed_room('Third'))
+
+      second.publish!
+
+      expect(first.reload.status).to eq 'superseded'
+      expect(third.reload.status).to eq 'held'
+      expect(identity.published_room).to eq second
+    end
+
+    it 'does not let an older proposal replace a newer room that is already live' do
+      older = identity.agent_rooms.create!(html: designed_room('Older'))
+      newer = identity.agent_rooms.create!(html: designed_room('Newer'))
+      newer.publish!
+
+      expect(older.reload).to_not be_publishable
+      expect(identity.published_room).to eq newer
+    end
+
+    it 'never reuses a version number' do
+      identity.agent_rooms.create!(html: designed_room('One'))
+      two = identity.agent_rooms.create!(html: designed_room('Two'))
+      two.update!(status: 'rejected')
+
+      expect(identity.agent_rooms.create!(html: designed_room('Three')).version).to eq 3
     end
   end
 

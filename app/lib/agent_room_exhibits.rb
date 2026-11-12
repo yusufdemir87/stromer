@@ -9,6 +9,11 @@ class AgentRoomExhibits
   CORRECTION_LIMIT = 20
   NEIGHBOUR_LIMIT = 8
 
+  # The same facts, kept for a couple of minutes: profile pages and the drawers' API both ask for them.
+  def self.cached(account, identity)
+    Rails.cache.fetch("agent_room_exhibits:#{account.id}", expires_in: 2.minutes) { new(account, identity).as_json }
+  end
+
   def initialize(account, identity)
     @account = account
     @identity = identity
